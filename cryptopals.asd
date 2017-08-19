@@ -9,4 +9,6 @@
   :serial t
   :components ((:file "package")
                (:file "strings")
+               (:file "chi")
+               (:file "xor")
                (:file "cryptopals")))
