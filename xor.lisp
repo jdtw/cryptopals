@@ -7,12 +7,6 @@
     (unless (= len (length b2)) (error "b2 is not of length ~a" len))
     (map '(vector (unsigned-byte 8) *) #'logxor b1 b2)))
 
-(defun fixed-xor2 (stream key buffer &optional (start 0))
-  (dotimes (i (length key))
-    (write-byte (logxor (aref key i)
-                        (aref buffer (+ start i)))
-                stream)))
-
 (defun break-single-byte-xor (bytes &key (take 5))
   (mapcar
    (lambda (x)
@@ -28,3 +22,16 @@
            collect (list (chi-squared candidate) k candidate))
      #'< :key #'first)
     0 take)))
+
+(defun repeating-xor (key bytes)
+  (with-output-to-sequence (stream :element-type '(unsigned-byte 8))
+    (loop with key-len = (length key)
+          with buffer-len = (length bytes)
+          for pos = 0 then (+ pos key-len)
+          while (< pos buffer-len) do
+            (write-sequence
+             (if (< (- buffer-len pos) key-len)
+                 (fixed-xor (subseq key 0 (- buffer-len pos))
+                            (subseq bytes pos buffer-len))
+                 (fixed-xor key (subseq bytes pos (+ pos key-len))))
+             stream))))

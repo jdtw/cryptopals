@@ -35,7 +35,7 @@
 
 (defun bytes->hex(bytes)
   (with-output-to-string (s)
-    (loop for b across bytes do (format s "~x" b))))
+    (loop for b across bytes do (format s "~2,'0x" b))))
 
 ;;; Base64 encoding
 

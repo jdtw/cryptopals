@@ -20,4 +20,5 @@
            #:bytes->base64
            #:base64->bytes
            #:fixed-xor
-           #:break-single-byte-xor))
+           #:break-single-byte-xor
+           #:repeating-xor))
