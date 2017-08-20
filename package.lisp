@@ -22,4 +22,6 @@
            #:fixed-xor
            #:break-single-byte-xor
            #:repeating-xor
-           #:hamming-distance))
+           #:hamming-distance
+           #:find-xor-keysize
+           #:break-repeating-xor))
