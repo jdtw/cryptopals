@@ -21,4 +21,5 @@
            #:base64->bytes
            #:fixed-xor
            #:break-single-byte-xor
-           #:repeating-xor))
+           #:repeating-xor
+           #:hamming-distance))

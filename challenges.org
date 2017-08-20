@@ -55,3 +55,17 @@
 
 #+RESULTS:
 : 0B3637272A2B2E63622C2E69692A23693A2A3C6324202D623D63343C2A26226324272765272A282B2F20430A652E2C652A3124333A653E2B2027630C692B20283165286326302E27282F
+** Break repeating-key XOR
+#+BEGIN_SRC lisp
+  (cp:hamming-distance (ascii->bytes "this is a test")
+                       (ascii->bytes "wokka wokka!!!"))
+#+END_SRC
+
+#+RESULTS:
+: 37
+#+BEGIN_SRC lisp
+  (with-output-to-sequence (stream :element-type '(unsigned-byte 8))
+    (with-open-file (in "6.txt")
+      (loop for line = (read-line in nil)
+            while line do (write-sequence (base64->bytes line) stream))))
+#+END_SRC
