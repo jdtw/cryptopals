@@ -1,0 +1,47 @@
+#+TITLE: Cryptopals Challenges
+#+PROPERTY: header-args :exports both
+
+* Set 1
+** Convert hex to base64
+#+BEGIN_SRC lisp
+  (cp:bytes->base64 (cp:hex->bytes "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"))
+#+END_SRC
+
+#+RESULTS:
+: SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
+** Fixed XOR
+#+BEGIN_SRC lisp
+  (cp:bytes->hex
+   (cp:fixed-xor
+    (cp:hex->bytes "1c0111001f010100061a024b53535009181c")
+    (cp:hex->bytes "686974207468652062756c6c277320657965")))
+#+END_SRC
+
+#+RESULTS:
+: 746865206B696420646F6E277420706C6179
+** Single-byte XOR cipher
+#+BEGIN_SRC lisp
+  (cp:break-single-byte-xor
+   (cp:hex->bytes "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+   :take 3)
+#+END_SRC
+
+#+RESULTS:
+| :SCORE |   44.4112472277668d0 | :KEY | 88 | :STRING | Cooking MC's like a pound of bacon |
+| :SCORE | 110.35714369314172d0 | :KEY | 95 | :STRING | Dhhlni`'JD t'knlb'f'whric'ha'efdhi |
+| :SCORE | 262.04652769779057d0 | :KEY | 90 | :STRING | Ammikle"OA%q"nkig"c"rmwlf"md"`caml |
+** Detect single-character XOR
+#+BEGIN_SRC lisp
+  (flet ((top-score (hex)
+           (first (cp:break-single-byte-xor (cp:hex->bytes hex) :take 1))))
+    (let ((scores (with-open-file (in "4.txt")
+                    (loop for l = (read-line in nil)
+                          while l collect (nconc (list :line l)
+                                                 (top-score l))))))
+      (subseq (sort scores #'< :key (lambda (x) (getf x :score))) 0 3)))
+#+END_SRC
+
+#+RESULTS:
+| :LINE | 7b5a4215415d544115415d5015455447414c155c46155f4058455c5b523f | :SCORE |  51.34496174418811d0 | :KEY |  53 | :STRING | Now that the party is jumping  |
+| :LINE | 1512371119050c0c1142245a004f033650481830230a1925085c1a172726 | :SCORE | 1354.2280125504628d0 | :KEY |  98 | :STRING | wpUs{gnns F8b-aT2*zRAh{Gj>xuED |
+| :LINE | 3649211f210456051e290f1b4c584d0749220c280b2a50531f262901503e | :SCORE |  1590.593559498911d0 | :KEY | 110 | :STRING | X'OqOj8kpGau"6#i'LbFeD>=qHGo>P |

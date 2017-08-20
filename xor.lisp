@@ -14,15 +14,17 @@
                 stream)))
 
 (defun break-single-byte-xor (bytes &key (take 5))
-  (subseq
-   (mapcar
-    (lambda (x)
-      (list (second x) (bytes->ascii (third x) :ignore-errors t)))
+  (mapcar
+   (lambda (x)
+     (list :score (first x)
+           :key (second x)
+           :string (bytes->ascii (third x) :ignore-errors t)))
+   (subseq
     (sort
      (loop for k from 0 to 255
            for candidate = (map '(vector (unsigned-byte 8) *)
                                 (lambda (b) (logxor b k))
                                 bytes)
            collect (list (chi-squared candidate) k candidate))
-     #'< :key #'first))
-   0 take))
+     #'< :key #'first)
+    0 take)))
