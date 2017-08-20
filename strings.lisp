@@ -6,11 +6,11 @@
 ;;; Note: Cheat and use babel here. I can't bring myself to hack this together
 ;;;       myself with char-code and code-char.
 
-(defun utf8->bytes (string)
-  (string-to-octets string :encoding :utf-8))
+(defun ascii->bytes (string)
+  (string-to-octets string :encoding :ascii))
 
-(defun bytes->utf8 (bytes)
-  (octets-to-string bytes :encoding :utf-8))
+(defun bytes->ascii (bytes &key ignore-errors)
+  (octets-to-string bytes :encoding :ascii :errorp (not ignore-errors)))
 
 ;;; Hex encoding
 

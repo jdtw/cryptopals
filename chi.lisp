@@ -3,27 +3,40 @@
 (in-package #:cryptopals)
 
 (defconstant +frequencies+
-  '((#\e . 0.12702d0) (#\t . 0.09056d0) (#\a . 0.08167d0) (#\o . 0.07507d0)
-    (#\i . 0.06966d0) (#\n . 0.06749d0) (#\s . 0.06327d0) (#\h . 0.06094d0)
-    (#\r . 0.05987d0) (#\d . 0.04253d0) (#\l . 0.04025d0) (#\c . 0.02782d0)
-    (#\u . 0.02758d0) (#\m . 0.02406d0) (#\w . 0.0236d0) (#\f . 0.02228d0)
-    (#\g . 0.02015d0) (#\y . 0.01974d0) (#\p . 0.01929d0) (#\b . 0.01492d0)
-    (#\v . 0.00978d0) (#\k . 0.00772d0) (#\j . 0.00153d0) (#\x . 0.0015d0)
-    (#\q . 9.5d-4) (#\z . 7.4d-4)))
+  '((#\a . 0.0651738d0) (#\b . 0.0124248d0) (#\c . 0.0217339d0)
+    (#\d . 0.0349835d0) (#\e . 0.1041442d0) (#\f . 0.0197881d0)
+    (#\g . 0.0158610d0) (#\h . 0.0492888d0) (#\i . 0.0558094d0)
+    (#\j . 0.0009033d0) (#\k . 0.0050529d0) (#\l . 0.0331490d0)
+    (#\m . 0.0202124d0) (#\n . 0.0564513d0) (#\o . 0.0596302d0)
+    (#\p . 0.0137645d0) (#\q . 0.0008606d0) (#\r . 0.0497563d0)
+    (#\s . 0.0515760d0) (#\t . 0.0729357d0) (#\u . 0.0225134d0)
+    (#\v . 0.0082903d0) (#\w . 0.0171272d0) (#\x . 0.0013692d0)
+    (#\y . 0.0145984d0) (#\z . 0.0007836d0) (#\Space . 0.1918182d0)))
+
+(define-condition non-graphic-char (error) ())
 
 (defun count-letters (string)
   (loop with table = (make-hash-table)
-        for c across string
-        when (alpha-char-p c)
-          do (incf (gethash (char-downcase c) table 0))
-        finally (return table)))
+        with ignored = 0
+        for c across string do
+          (cond
+            ((not (graphic-char-p c)) (error 'non-graphic-char))
+            ((alpha-char-p c)
+             (incf (gethash (char-downcase c) table 0)))
+            ((member c '(#\Space #\Newline #\Tab))
+             (incf (gethash #\Space table 0)))
+            (t (incf ignored)))
+        finally (return (values table (- (length string) ignored)))))
 
 (defun chi-squared (candidate)
-  (loop with len = (length candidate)
-        with counts = (count-letters (bytes->utf8 candidate))
-        for e in +frequencies+
-        summing (let ((ec (* (cdr e) len))
-                      (c (gethash (car e) counts 0)))
-                  (format t "~a: ec: ~a c: ~a -> ~a~%"  (car e) ec c
-                          (/ (expt (- c ec) 2) ec))
-                  (/ (expt (- c ec) 2) ec))))
+  (handler-case
+      (multiple-value-bind (table len)
+          (count-letters (bytes->ascii candidate))
+        (if (zerop len)
+            most-positive-double-float
+            (loop for e in +frequencies+
+                  summing (let ((ec (* (cdr e) len))
+                                (c (gethash (car e) table 0)))
+                            (/ (expt (- c ec) 2) ec)))))
+    (character-decoding-error () most-positive-double-float)
+    (non-graphic-char () most-positive-double-float)))
