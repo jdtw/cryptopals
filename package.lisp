@@ -2,6 +2,7 @@
 
 (defpackage #:cryptopals
   (:use #:cl)
+  (:nicknames #:cp)
   (:import-from #:babel
                 #:string-to-octets
                 #:octets-to-string
