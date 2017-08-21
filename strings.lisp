@@ -90,3 +90,10 @@
           for pos = 0 then (+ pos 4)
           until (>= pos len)
           do (decode-4-chars s string pos))))
+
+;;; Reading files
+(defun read-base64-file (pathspec)
+  (with-output-to-sequence (stream :element-type '(unsigned-byte 8))
+    (with-open-file (in pathspec)
+      (loop for line = (read-line in nil)
+            while line do (write-sequence (base64->bytes line) stream)))))

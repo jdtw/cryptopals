@@ -21,8 +21,9 @@
 : "746865206B696420646F6E277420706C6179"
 ** Single-byte XOR cipher
 #+BEGIN_SRC lisp
-  (car (cp:break-single-byte-xor
-              (cp:hex->bytes "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")))
+  (car
+   (cp:break-single-byte-xor
+    (cp:hex->bytes "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")))
 #+END_SRC
 
 #+RESULTS:
@@ -61,23 +62,12 @@ Test our hamming distance calculation:
 
 #+RESULTS:
 : 37
-And here's a little helper that we'll use below to parse the 6.txt file:
-#+BEGIN_SRC lisp
-  (defun challenge-6-bytes (pathspec)
-    (with-output-to-sequence (stream :element-type '(unsigned-byte 8))
-      (with-open-file (in pathspec)
-        (loop for line = (read-line in nil)
-              while line do (write-sequence (base64->bytes line) stream)))))
-#+END_SRC
-
-#+RESULTS:
-: CHALLENGE-6-BYTES
-Next, we attempt to find the key size of the XOR'd challenge text. My
+Now, attempt to find the key size of the XOR'd challenge text. My
 ~FIND-XOR-KEYSIZE~ implementation averages ~BLOCK-COUNT~ blocks. Looking at the
 output, it converges on a key size of 29 bytes, which is what we'll use to try
 and break the cipher.
 #+BEGIN_SRC lisp
-  (loop with bytes = (challenge-6-bytes "6.txt")
+  (loop with bytes = (cp:read-base64-file "6.txt")
         for i from 1 to 20
         collect (cp:find-xor-keysize bytes :block-count i))
 #+END_SRC
@@ -86,7 +76,7 @@ and break the cipher.
 : (5 5 5 5 5 5 5 29 29 29 29 29 29 29 29 29 29 29 29 29)
 And now try to actually break repeating XOR.
 #+BEGIN_SRC lisp
-  (let ((bytes (challenge-6-bytes "6.txt")))
+  (let ((bytes (cp:read-base64-file "6.txt")))
     (cp:bytes->ascii
      (cp:break-repeating-xor
       (cp:find-xor-keysize bytes)
@@ -175,4 +165,95 @@ Play that funky music A little louder now
 Play that funky music, white boy Come on, Come on, Come on
 Play that funky music
 "
+#+end_example
+** AES in ECB mode
+#+BEGIN_SRC lisp
+  (cp:bytes->ascii
+   (cp:decrypt-aes-128-ecb
+    (cp:ascii->bytes "YELLOW SUBMARINE")
+    (cp:read-base64-file "7.txt")))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+"I'm back and I'm ringin' the bell
+A rockin' on the mike while the fly girls yell
+In ecstasy in the back of me
+Well that's my DJ Deshay cuttin' all them Z's
+Hittin' hard and the girlies goin' crazy
+Vanilla's on the mike, man I'm not lazy.
+
+I'm lettin' my drug kick in
+It controls my mouth and I begin
+To just let it flow, let my concepts go
+My posse's to the side yellin', Go Vanilla Go!
+
+Smooth 'cause that's the way I will be
+And if you don't give a damn, then
+Why you starin' at me
+So get off 'cause I control the stage
+There's no dissin' allowed
+I'm in my own phase
+The girlies sa y they love me and that is ok
+And I can dance better than any kid n' play
+
+Stage 2 -- Yea the one ya' wanna listen to
+It's off my head so let the beat play through
+So I can funk it up and make it sound good
+1-2-3 Yo -- Knock on some wood
+For good luck, I like my rhymes atrocious
+Supercalafragilisticexpialidocious
+I'm an effect and that you can bet
+I can take a fly girl and make her wet.
+
+I'm like Samson -- Samson to Delilah
+There's no denyin', You can try to hang
+But you'll keep tryin' to get my style
+Over and over, practice makes perfect
+But not if you're a loafer.
+
+You'll get nowhere, no place, no time, no girls
+Soon -- Oh my God, homebody, you probably eat
+Spaghetti with a spoon! Come on and say it!
+
+VIP. Vanilla Ice yep, yep, I'm comin' hard like a rhino
+Intoxicating so you stagger like a wino
+So punks stop trying and girl stop cryin'
+Vanilla Ice is sellin' and you people are buyin'
+'Cause why the freaks are jockin' like Crazy Glue
+Movin' and groovin' trying to sing along
+All through the ghetto groovin' this here song
+Now you're amazed by the VIP posse.
+
+Steppin' so hard like a German Nazi
+Startled by the bases hittin' ground
+There's no trippin' on mine, I'm just gettin' down
+Sparkamatic, I'm hangin' tight like a fanatic
+You trapped me once and I thought that
+You might have it
+So step down and lend me your ear
+'89 in my time! You, '90 is my year.
+
+You're weakenin' fast, YO! and I can tell it
+Your body's gettin' hot, so, so I can smell it
+So don't be mad and don't be sad
+'Cause the lyrics belong to ICE, You can call me Dad
+You're pitchin' a fit, so step back and endure
+Let the witch doctor, Ice, do the dance to cure
+So come up close and don't be square
+You wanna battle me -- Anytime, anywhere
+
+You thought that I was weak, Boy, you're dead wrong
+So come on, everybody and sing this song
+
+Say -- Play that funky music Say, go white boy, go white boy go
+play that funky music Go white boy, go white boy, go
+Lay down and boogie and play that funky music till you die.
+
+Play that funky music Come on, Come on, let me hear
+Play that funky music white boy you say it, say it
+Play that funky music A little louder now
+Play that funky music, white boy Come on, Come on, Come on
+Play that funky music
+"
 #+end_example

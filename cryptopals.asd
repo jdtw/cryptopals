@@ -5,10 +5,12 @@
   :author "John Wood <j@jdtw.us>"
   :license "MIT"
   :depends-on (#:babel
-               #:babel-streams)
+               #:babel-streams
+               #:cffi)
   :serial t
   :components ((:file "package")
                (:file "strings")
                (:file "chi")
                (:file "xor")
+               (:file "bcrypt")
                (:file "cryptopals")))
