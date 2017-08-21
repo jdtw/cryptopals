@@ -5,16 +5,17 @@
 (defun map-bytes (func sequence &rest more-sequences)
   (apply #'map '(vector (unsigned-byte 8) *) func sequence more-sequences))
 
-(defun blocker (size bytes)
+(defun blocker (size bytes &key pad)
   (let ((len (length bytes)) (pos 0))
     (lambda ()
       (cond ((= pos len) nil)
             ((< (- len pos) size)
-             (subseq bytes pos (setf pos len)))
+             (let ((short-block (subseq bytes pos (setf pos len))))
+               (if pad (pad-pkcs7 size short-block) short-block)))
             (t (subseq bytes pos (setf pos (+ pos size))))))))
 
-(defun blockify (size bytes)
-  (loop with blocker = (blocker size bytes)
+(defun blockify (size bytes &key pad)
+  (loop with blocker = (blocker size bytes :pad pad)
         for block = (funcall blocker)
         while block collect block))
 

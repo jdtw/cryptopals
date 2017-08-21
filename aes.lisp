@@ -16,3 +16,13 @@
                              (incf matches)))
                   (detector (cdr blocks) matches)))))
     (detector (blockify 16 bytes) 0)))
+
+(defun pad-pkcs7 (block-len bytes)
+  (let ((delta (- block-len (length bytes))))
+    (when (< delta 0) (error "buffer is longer than the block length"))
+    (with-output-to-sequence (padded :element-type '(unsigned-byte 8)
+                                     :initial-buffer-size block-len)
+      (write-sequence bytes padded)
+      (write-sequence (make-array delta :element-type '(unsigned-byte 8)
+                                        :initial-element delta)
+                      padded))))

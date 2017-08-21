@@ -33,4 +33,5 @@
            #:break-repeating-xor
            #:gen-random
            #:decrypt-aes-128-ecb
-           #:detect-aes-128-ecb))
+           #:detect-aes-128-ecb
+           #:pad-pkcs7))
