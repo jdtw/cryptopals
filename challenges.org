@@ -296,7 +296,7 @@ otherwise.
 * Set 2
 ** Implement PKCS#7 padding
 #+BEGIN_SRC lisp
-  (cp:pad-pkcs7 20 (cp:ascii->bytes "YELLOW SUBMARINE"))
+  (cp:pad-pkcs7 (cp:ascii->bytes "YELLOW SUBMARINE") :block-size 20)
 #+END_SRC
 
 #+RESULTS:
@@ -395,6 +395,10 @@ Play that funky music
 "
 #+end_example
 ** An ECB/CBC detection oracle
+Run ~ENCRYPTION-ORACLE~ ten times, and collect the results. My oracle
+returns multiple values -- the encrypted output, and ~T~ for ECB or
+~NIL~ for CBC. Run the ECB detector on the oracle output, and ensure
+we correctly detected the ECB encryptions.
 #+BEGIN_SRC lisp
   (let* ((input (make-array (* 16 4) :initial-element (char-code #\A)))
          (runs (loop repeat 10
@@ -408,5 +412,28 @@ Play that funky music
 #+END_SRC
 
 #+RESULTS:
-: ((T . 3) (T . 3) (T . 3) (NIL) (NIL) (T . 3) (NIL) (NIL) (T . 3) (T . 3))
+: ((T . 3) (T . 3) (T . 3) (NIL) (T . 3) (T . 3) (NIL) (T . 3) (NIL) (NIL))
 : T
+** Byte-at-a-time ECB decryption (Simple)
+*** Detect the block size
+#+BEGIN_SRC lisp
+  (let ((oracle (cp:make-oracle)))
+    (loop for i from 1 to 64
+          for encrypted = (funcall oracle
+                                   (make-array (* i 2) :initial-element 97))
+          for blocks = (cp:blockify encrypted :block-size i)
+          until (equalp (first blocks) (second blocks))
+          finally (return i)))
+#+END_SRC
+
+#+RESULTS:
+: 16
+*** Detect that the function is using ECB
+#+BEGIN_SRC lisp
+  (let ((oracle (cp:make-oracle)))
+    (cp:detect-aes-128-ecb
+     (funcall oracle (make-array (* 16 2) :initial-element 97))))
+#+END_SRC
+
+#+RESULTS:
+: 1

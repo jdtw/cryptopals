@@ -24,6 +24,7 @@
            #:base64->bytes
            #:read-base64-file
            #:read-hex-line-file
+           #:blockify
            #:fixed-xor
            #:*frequencies*
            #:break-single-byte-xor
@@ -39,4 +40,5 @@
            #:unpad-pkcs7
            #:encrypt-aes-128-cbc
            #:decrypt-aes-128-cbc
-           #:encryption-oracle))
+           #:encryption-oracle
+           #:make-oracle))

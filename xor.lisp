@@ -27,7 +27,7 @@
 (defun repeating-xor (key bytes)
   (with-output-to-sequence (stream :element-type '(unsigned-byte 8))
     (loop with key-len = (length key)
-          with blocker = (blocker key-len bytes)
+          with blocker = (blocker bytes :block-size key-len)
           for block = (funcall blocker)
           while block do
             (write-sequence
@@ -41,7 +41,7 @@
 
 (defun find-xor-keysize (bytes &key (block-count 10))
   (cdar (sort (loop for ks from 2 to 40
-                    for blocker = (blocker ks bytes)
+                    for blocker = (blocker bytes :block-size ks)
                     for blocks = (loop repeat (1+ block-count)
                                        collect (funcall blocker))
                     collect
@@ -54,7 +54,7 @@
               #'< :key #'car)))
 
 (defun transpose-blocks (block-size bytes)
-  (let* ((blocks (blockify block-size bytes))
+  (let* ((blocks (blockify bytes :block-size block-size))
          (block-count (length blocks)))
     (loop for i from 0 to (1- block-size)
           collect
