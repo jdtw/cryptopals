@@ -279,18 +279,20 @@ Play that funky music
 ** Detect AES in ECB mode
 To detect collisions, ~DETECT-AES-128-ECB~ breaks each line up into blocks
 and compares each block against the others, looking for blocks that are equal.
-It returns the number of equal blocks.
+It returns the number of equal blocks if ECB is detected, or ~NIL~
+otherwise.
 #+BEGIN_SRC lisp
   (let ((lines (cp:read-hex-line-file "8.txt")))
-    (cdar (sort (mapcar (lambda (line)
-                          (cons (cp:detect-aes-128-ecb line)
-                                (cp:bytes->hex line)))
-                        lines)
-                #'> :key #'car)))
+    (remove-if #'null (mapcar (lambda (line)
+                                (cons (cp:detect-aes-128-ecb line)
+                                      (cp:bytes->hex line)))
+                              lines)
+               :key #'car))
 #+END_SRC
 
 #+RESULTS:
-: "D880619740A8A19B7840A8A31C810A3D08649AF70DC06F4FD5D2D69C744CD283E2DD052F6B641DBF9D11B0348542BB5708649AF70DC06F4FD5D2D69C744CD2839475C9DFDBC1D46597949D9C7E82BF5A08649AF70DC06F4FD5D2D69C744CD28397A93EAB8D6AECD566489154789A6B0308649AF70DC06F4FD5D2D69C744CD283D403180C98C8F6DB1F2A3F9C4040DEB0AB51B29933F2C123C58386B06FBA186A"
+: ((6
+:   . "D880619740A8A19B7840A8A31C810A3D08649AF70DC06F4FD5D2D69C744CD283E2DD052F6B641DBF9D11B0348542BB5708649AF70DC06F4FD5D2D69C744CD2839475C9DFDBC1D46597949D9C7E82BF5A08649AF70DC06F4FD5D2D69C744CD28397A93EAB8D6AECD566489154789A6B0308649AF70DC06F4FD5D2D69C744CD283D403180C98C8F6DB1F2A3F9C4040DEB0AB51B29933F2C123C58386B06FBA186A"))
 * Set 2
 ** Implement PKCS#7 padding
 #+BEGIN_SRC lisp
@@ -392,3 +394,19 @@ Play that funky music, white boy Come on, Come on, Come on
 Play that funky music
 "
 #+end_example
+** An ECB/CBC detection oracle
+#+BEGIN_SRC lisp
+  (let* ((input (make-array (* 16 4) :initial-element (char-code #\A)))
+         (runs (loop repeat 10
+                     collect (multiple-value-list (cp:encryption-oracle input))))
+         (results (mapcar (lambda (r) (cons (second r)
+                                            (cp:detect-aes-128-ecb (first r))))
+                          runs)))
+    (values results (every (lambda (r) (or (and (car r) (cdr r))
+                                           (not (or (car r) (cdr r)))))
+                           results)))
+#+END_SRC
+
+#+RESULTS:
+: ((T . 3) (T . 3) (T . 3) (NIL) (NIL) (T . 3) (NIL) (NIL) (T . 3) (T . 3))
+: T

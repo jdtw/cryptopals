@@ -38,4 +38,5 @@
            #:pad-pkcs7
            #:unpad-pkcs7
            #:encrypt-aes-128-cbc
-           #:decrypt-aes-128-cbc))
+           #:decrypt-aes-128-cbc
+           #:encryption-oracle))
