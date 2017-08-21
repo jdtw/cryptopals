@@ -28,6 +28,25 @@
 
 #+RESULTS:
 : (:SCORE 44.4112472277668d0 :KEY 88 :STRING "Cooking MC's like a pound of bacon")
+To score English text, I used a Chi-squared test. I had to play with the
+frequencies a fair amount -- just using a-z was not giving great results. The
+most important thing I did was to add a penalty for uncommon characters. Common
+punctuation is ignored, but uncommon punctuation is penalized (see the ~#\Nul~
+frequency below).
+#+BEGIN_SRC lisp
+  cp:*frequencies*
+#+END_SRC
+
+#+RESULTS:
+: ((#\a . 0.0651738d0) (#\b . 0.0124248d0) (#\c . 0.0217339d0)
+:  (#\d . 0.0349835d0) (#\e . 0.1041442d0) (#\f . 0.0197881d0) (#\g . 0.015861d0)
+:  (#\h . 0.0492888d0) (#\i . 0.0558094d0) (#\j . 9.033d-4) (#\k . 0.0050529d0)
+:  (#\l . 0.033149d0) (#\m . 0.0202124d0) (#\n . 0.0564513d0) (#\o . 0.0596302d0)
+:  (#\p . 0.0137645d0) (#\q . 8.606d-4) (#\r . 0.0497563d0) (#\s . 0.051576d0)
+:  (#\t . 0.0729357d0) (#\u . 0.0225134d0) (#\v . 0.0082903d0)
+:  (#\w . 0.0171272d0) (#\x . 0.0013692d0) (#\y . 0.0145984d0) (#\z . 7.836d-4)
+:  (#\  . 0.1918182d0) (#\Nul . 0.001d0))
+
 ** Detect single-character XOR
 #+BEGIN_SRC lisp
   (flet ((top-score (hex)
@@ -46,8 +65,8 @@
 ** Implement repeating-key XOR
 #+BEGIN_SRC lisp
   (cp:bytes->hex
-   (cp:repeating-xor (ascii->bytes "ICE")
-                     (ascii->bytes "Burning 'em, if you ain't quick and nimble
+   (cp:repeating-xor (cp:ascii->bytes "ICE")
+                     (cp:ascii->bytes "Burning 'em, if you ain't quick and nimble
   I go crazy when I hear a cymbal")))
 #+END_SRC
 
@@ -56,8 +75,8 @@
 ** Break repeating-key XOR
 Test our hamming distance calculation:
 #+BEGIN_SRC lisp
-  (cp:hamming-distance (ascii->bytes "this is a test")
-                       (ascii->bytes "wokka wokka!!!"))
+  (cp:hamming-distance (cp:ascii->bytes "this is a test")
+                       (cp:ascii->bytes "wokka wokka!!!"))
 #+END_SRC
 
 #+RESULTS:
@@ -257,3 +276,18 @@ Play that funky music, white boy Come on, Come on, Come on
 Play that funky music
 "
 #+end_example
+** Detect AES in ECB mode
+To detect collisions, ~DETECT-AES-128-ECB~ breaks each line up into blocks
+and compares each block against the others, looking for blocks that are equal.
+It returns the number of equal blocks.
+#+BEGIN_SRC lisp
+  (let ((lines (cp:read-hex-line-file "8.txt")))
+    (cdar (sort (mapcar (lambda (line)
+                          (cons (cp:detect-aes-128-ecb line)
+                                (cp:bytes->hex line)))
+                        lines)
+                #'> :key #'car)))
+#+END_SRC
+
+#+RESULTS:
+: "D880619740A8A19B7840A8A31C810A3D08649AF70DC06F4FD5D2D69C744CD283E2DD052F6B641DBF9D11B0348542BB5708649AF70DC06F4FD5D2D69C744CD2839475C9DFDBC1D46597949D9C7E82BF5A08649AF70DC06F4FD5D2D69C744CD28397A93EAB8D6AECD566489154789A6B0308649AF70DC06F4FD5D2D69C744CD283D403180C98C8F6DB1F2A3F9C4040DEB0AB51B29933F2C123C58386B06FBA186A"

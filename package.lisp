@@ -3,6 +3,9 @@
 (defpackage #:cryptopals
   (:use #:cl #:cffi)
   (:nicknames #:cp)
+  (:import-from #:alexandria
+                #:define-constant
+                #:with-gensyms)
   (:import-from #:babel
                 #:string-to-octets
                 #:octets-to-string
@@ -20,11 +23,14 @@
            #:bytes->base64
            #:base64->bytes
            #:read-base64-file
+           #:read-hex-line-file
            #:fixed-xor
+           #:*frequencies*
            #:break-single-byte-xor
            #:repeating-xor
            #:hamming-distance
            #:find-xor-keysize
            #:break-repeating-xor
+           #:gen-random
            #:decrypt-aes-128-ecb
-           #:gen-random))
+           #:detect-aes-128-ecb))

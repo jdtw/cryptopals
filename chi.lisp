@@ -4,7 +4,7 @@
 
 ;; Letter frequencies (including space). NUL is used as a penalty
 ;; for strange punctuation.
-(defconstant +frequencies+
+(defparameter *frequencies*
   '((#\a . 0.0651738d0) (#\b . 0.0124248d0) (#\c . 0.0217339d0)
     (#\d . 0.0349835d0) (#\e . 0.1041442d0) (#\f . 0.0197881d0)
     (#\g . 0.0158610d0) (#\h . 0.0492888d0) (#\i . 0.0558094d0)
@@ -39,7 +39,7 @@
           (count-letters (bytes->ascii candidate))
         (if (zerop len)
             most-positive-double-float
-            (loop for e in +frequencies+
+            (loop for e in *frequencies*
                   summing (let ((ec (* (cdr e) len))
                                 (c (gethash (car e) table 0)))
                             (/ (expt (- c ec) 2) ec)))))

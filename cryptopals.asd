@@ -6,11 +6,13 @@
   :license "MIT"
   :depends-on (#:babel
                #:babel-streams
-               #:cffi)
+               #:cffi
+               #:alexandria)
   :serial t
   :components ((:file "package")
                (:file "strings")
                (:file "chi")
                (:file "xor")
                (:file "bcrypt")
+               (:file "aes")
                (:file "cryptopals")))

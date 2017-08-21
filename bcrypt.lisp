@@ -74,12 +74,12 @@ The bcrypt-handle object is not safe to use after freeing it."))
 
 ;;; Constants
 
-(defconstant +bcrypt-aes-algorithm+ "AES")
-(defconstant +bcrypt-chaining-mode+ "ChainingMode")
-(defconstant +bcrypt-block-length+ "BlockLength")
-(defconstant +bcrypt-key-length+ "KeyLength")
-(defconstant +bcrypt-initialization-vector+ "IV")
-(defconstant +bcrypt-chain-mode-ecb+ "ChainingModeECB")
+(define-constant +bcrypt-aes-algorithm+ "AES" :test #'string=)
+(define-constant +bcrypt-chaining-mode+ "ChainingMode" :test #'string=)
+(define-constant +bcrypt-block-length+ "BlockLength" :test #'string=)
+(define-constant +bcrypt-key-length+ "KeyLength" :test #'string=)
+(define-constant +bcrypt-initialization-vector+ "IV" :test #'string=)
+(define-constant +bcrypt-chain-mode-ecb+ "ChainingModeECB" :test #'string=)
 (defconstant +bcrypt-pad-none+ #x00000001)
 (defconstant +bcrypt-use-system-preferred-rng+ 2)
 
@@ -299,11 +299,6 @@ The bcrypt-handle object is not safe to use after freeing it."))
                             byte-count
                             0))
           output)))))
-
-(defun decrypt-aes-128-ecb (secret bytes)
-  (with-aes-ecb-algorithm (alg)
-    (with-symmetric-key (key alg secret)
-      (decrypt key bytes))))
 
 (defun gen-random (size)
   (let ((random (make-shareable-byte-vector size)))

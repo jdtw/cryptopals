@@ -13,6 +13,11 @@
              (subseq bytes pos (setf pos len)))
             (t (subseq bytes pos (setf pos (+ pos size))))))))
 
+(defun blockify (size bytes)
+  (loop with blocker = (blocker size bytes)
+        for block = (funcall blocker)
+        while block collect block))
+
 (defun fixed-xor (b1 b2)
   (let ((len (length b1)))
     (unless (= len (length b2)) (error "b2 is not of length ~a" len))
@@ -62,9 +67,7 @@
               #'< :key #'car)))
 
 (defun transpose-blocks (block-size bytes)
-  (let* ((blocks (loop with blocker = (blocker block-size bytes)
-                       for block = (funcall blocker)
-                       while block collect block))
+  (let* ((blocks (blockify block-size bytes))
          (block-count (length blocks)))
     (loop for i from 0 to (1- block-size)
           collect

@@ -14,10 +14,13 @@
 
 ;;; Hex encoding
 
-(defconstant +ascii-hex+ '((#\0 . #x0) (#\1 . #x1) (#\2 . #x2) (#\3 . #x3)
-                           (#\4 . #x4) (#\5 . #x5) (#\6 . #x6) (#\7 . #x7)
-                           (#\8 . #x8) (#\9 . #x9) (#\a . #xa) (#\b . #xb)
-                           (#\c . #xc) (#\d . #xd) (#\e . #xe) (#\f . #xf)))
+(define-constant +ascii-hex+
+    '((#\0 . #x0) (#\1 . #x1) (#\2 . #x2) (#\3 . #x3)
+      (#\4 . #x4) (#\5 . #x5) (#\6 . #x6) (#\7 . #x7)
+      (#\8 . #x8) (#\9 . #x9) (#\a . #xa) (#\b . #xb)
+      (#\c . #xc) (#\d . #xd) (#\e . #xe) (#\f . #xf))
+  :test #'equal)
+
 (defun char->num (c)
   (let ((n (assoc c +ascii-hex+ :test #'char-equal)))
     (when (null n) (error "~a is not a hex character" c))
@@ -39,7 +42,9 @@
 
 ;;; Base64 encoding
 
-(defconstant +base64-encoding+ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
+(define-constant +base64-encoding+
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+  :test #'string=)
 (defun encode-3-bytes (stream bytes start end)
   (multiple-value-bind (b1 b2 b3)
       (let ((rel-length (- end start)))
@@ -92,8 +97,14 @@
           do (decode-4-chars s string pos))))
 
 ;;; Reading files
+
 (defun read-base64-file (pathspec)
   (with-output-to-sequence (stream :element-type '(unsigned-byte 8))
     (with-open-file (in pathspec)
       (loop for line = (read-line in nil)
             while line do (write-sequence (base64->bytes line) stream)))))
+
+(defun read-hex-line-file (pathspec)
+  (with-open-file (in pathspec)
+    (loop for line = (read-line in nil)
+          while line collect (hex->bytes line))))
