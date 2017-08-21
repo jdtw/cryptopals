@@ -12,6 +12,7 @@
   :components ((:file "package")
                (:file "strings")
                (:file "chi")
+               (:file "block")
                (:file "xor")
                (:file "bcrypt")
                (:file "aes")

@@ -32,6 +32,10 @@
            #:find-xor-keysize
            #:break-repeating-xor
            #:gen-random
+           #:encrypt-aes-128-ecb
            #:decrypt-aes-128-ecb
            #:detect-aes-128-ecb
-           #:pad-pkcs7))
+           #:pad-pkcs7
+           #:unpad-pkcs7
+           #:encrypt-aes-128-cbc
+           #:decrypt-aes-128-cbc))

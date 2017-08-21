@@ -1,0 +1,38 @@
+;;;; block.lisp
+
+(in-package #:cryptopals)
+
+(defun pad-pkcs7 (block-len bytes)
+  (let ((delta (- block-len (length bytes))))
+    (when (< delta 0) (error "buffer is longer than the block length"))
+    (with-output-to-sequence (padded :element-type '(unsigned-byte 8)
+                                     :initial-buffer-size block-len)
+      (write-sequence bytes padded)
+      (write-sequence (make-array delta :element-type '(unsigned-byte 8)
+                                        :initial-element delta)
+                      padded))))
+
+(defun unpad-pkcs7 (bytes)
+  (let ((len (length bytes)))
+    (if (> len 0)
+        (let ((delta (aref bytes (- len 1))))
+          (if (and (<= delta len)
+                   (every (lambda (b) (= b delta))
+                          (subseq bytes (- len delta) len)))
+              (subseq bytes 0 (- len delta))
+              bytes))
+        bytes)))
+
+(defun blocker (size bytes &key pad)
+  (let ((len (length bytes)) (pos 0))
+    (lambda ()
+      (cond ((= pos len) nil)
+            ((< (- len pos) size)
+             (let ((short-block (subseq bytes pos (setf pos len))))
+               (if pad (pad-pkcs7 size short-block) short-block)))
+            (t (subseq bytes pos (setf pos (+ pos size))))))))
+
+(defun blockify (size bytes &key pad)
+  (loop with blocker = (blocker size bytes :pad pad)
+        for block = (funcall blocker)
+        while block collect block))

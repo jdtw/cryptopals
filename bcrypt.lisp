@@ -272,33 +272,41 @@ The bcrypt-handle object is not safe to use after freeing it."))
                 (close-bcrypt-handle ,var)))
          (free-bcrypt-handle ,var)))))
 
-(defun decrypt (key input)
+(defun crypt (func key input)
   (let ((input-len (length input)))
     (with-foreign-array (foreign-input input `(:array :uint8 ,input-len))
       (with-foreign-object (byte-count :ulong)
-        (bcrypt-decrypt key
-                        foreign-input
-                        input-len
-                        (null-pointer)
-                        (null-pointer)
-                        0
-                        (null-pointer)
-                        0
-                        byte-count
-                        0)
+        (funcall func
+                 key
+                 foreign-input
+                 input-len
+                 (null-pointer)
+                 (null-pointer)
+                 0
+                 (null-pointer)
+                 0
+                 byte-count
+                 0)
         (let ((output (make-shareable-byte-vector (mem-ref byte-count :ulong))))
           (with-pointer-to-vector-data (foreign-output output)
-            (bcrypt-decrypt key
-                            foreign-input
-                            input-len
-                            (null-pointer)
-                            (null-pointer)
-                            0
-                            foreign-output
-                            (mem-ref byte-count :ulong)
-                            byte-count
-                            0))
+            (funcall func
+                     key
+                     foreign-input
+                     input-len
+                     (null-pointer)
+                     (null-pointer)
+                     0
+                     foreign-output
+                     (mem-ref byte-count :ulong)
+                     byte-count
+                     0))
           output)))))
+
+(defun decrypt (key input)
+  (crypt #'bcrypt-decrypt key input))
+
+(defun encrypt (key input)
+  (crypt #'bcrypt-encrypt key input))
 
 (defun gen-random (size)
   (let ((random (make-shareable-byte-vector size)))

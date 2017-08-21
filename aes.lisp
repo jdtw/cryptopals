@@ -7,6 +7,32 @@
     (with-symmetric-key (key alg secret)
       (decrypt key bytes))))
 
+(defun encrypt-aes-128-ecb (secret bytes)
+  (with-aes-ecb-algorithm (alg)
+    (with-symmetric-key (key alg secret)
+      (encrypt key bytes))))
+
+(defun encrypt-aes-128-cbc (secret iv bytes)
+  (with-output-to-sequence (stream :element-type '(unsigned-byte 8)
+                                   :initial-buffer-size (length bytes))
+    (with-aes-ecb-algorithm (alg)
+      (with-symmetric-key (key alg secret)
+        (let ((blocks (blockify 16 bytes :pad t)) (ciphertext iv))
+          (dolist (plaintext blocks)
+            (write-sequence
+             (setf ciphertext (encrypt key (fixed-xor plaintext ciphertext)))
+             stream)))))))
+
+(defun decrypt-aes-128-cbc (secret iv bytes)
+  (with-output-to-sequence (stream :element-type '(unsigned-byte 8)
+                                   :initial-buffer-size (length bytes))
+    (with-aes-ecb-algorithm (alg)
+      (with-symmetric-key (key alg secret)
+        (let ((blocks (blockify 16 bytes)) (xor iv))
+          (dolist (ciphertext blocks)
+            (write-sequence (fixed-xor (decrypt key ciphertext) xor) stream)
+            (setf xor ciphertext)))))))
+
 (defun detect-aes-128-ecb (bytes)
   (labels ((detector (blocks matches)
              (cond
@@ -16,13 +42,3 @@
                              (incf matches)))
                   (detector (cdr blocks) matches)))))
     (detector (blockify 16 bytes) 0)))
-
-(defun pad-pkcs7 (block-len bytes)
-  (let ((delta (- block-len (length bytes))))
-    (when (< delta 0) (error "buffer is longer than the block length"))
-    (with-output-to-sequence (padded :element-type '(unsigned-byte 8)
-                                     :initial-buffer-size block-len)
-      (write-sequence bytes padded)
-      (write-sequence (make-array delta :element-type '(unsigned-byte 8)
-                                        :initial-element delta)
-                      padded))))
