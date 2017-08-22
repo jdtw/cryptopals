@@ -64,31 +64,46 @@
 
 (defun make-oracle (&optional bytes-to-append)
   (let ((secret (gen-random 16)))
-    (lambda (input)
-      (encrypt-aes-128-ecb secret
-                           (concat-bytes input (or bytes-to-append #()))))))
+    (values
+     (lambda (input)
+       (encrypt-aes-128-ecb
+        secret
+        (concat-bytes input (or bytes-to-append #()))))
+     secret)))
 
-(defun make-oracle-dictionary (oracle initial-bytes block-index
-                               &key  (block-size 16))
+(defun make-oracle-dictionary (oracle initial-bytes &key (block-size 16))
   (loop with dict = (make-hash-table :test #'equal)
         for i from 0 to 255
         for bytes = (concat-bytes initial-bytes
                                   (make-array 1 :initial-element i))
         for encrypted = (funcall oracle bytes)
-        for block = (nth-block block-index encrypted :block-size block-size)
+        for block = (nth-block 0 encrypted :block-size block-size)
         do (setf (gethash (bytes->hex block) dict) i)
         finally (return dict)))
 
-(defun decrypt-oracle-block (oracle block-index &key (block-size 16))
-  (let ((bytes (make-array (1- block-size) :element-type '(unsigned-byte 8)
+(defun break-aes-ecb-with-oracle (oracle &key (block-size 16))
+  (let ((block-count (length (blockify (funcall oracle #())
+                                       :block-size block-size)))
+        (bytes (make-array (1- block-size) :element-type '(unsigned-byte 8)
                                            :initial-element 0
                                            :adjustable t
                                            :fill-pointer t)))
-    (dotimes (i block-size (subseq bytes (1- block-size)))
-      (let ((dict (make-oracle-dictionary oracle
-                                          (subseq bytes i (+ i (1- block-size)))
-                                          :block-size block-size))
-            (encryption (funcall oracle (subseq bytes 0 (- block-size i 1)))))
-        (vector-push-extend
-         (gethash (bytes->hex (nth-block block-index encryption)) dict)
-         bytes)))))
+    (dotimes (b block-count (subseq bytes (1- block-size)))
+      (dotimes (i block-size)
+        (let* ((db (* b block-size))
+               (dict (make-oracle-dictionary
+                      oracle
+                      (subseq bytes (+ db i) (+ db i (1- block-size)))
+                      :block-size block-size))
+               (encryption (funcall
+                            oracle
+                            (subseq bytes i (1- block-size))))
+               (result (gethash (bytes->hex (nth-block b encryption)) dict)))
+          (cond
+            (result (vector-push-extend result bytes))
+            ;; If we failed to find a result in the hash table, and
+            ;; the last value was 1, it means we've most likely hit
+            ;; PKCS#7 padding. We're done.
+            ((= (vector-pop bytes) 1) (return-from break-aes-ecb-with-oracle
+                                        (subseq bytes (1- block-size))))
+            (t (error "oracle decryption error"))))))))

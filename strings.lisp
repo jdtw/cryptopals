@@ -90,11 +90,12 @@
                   (ldb (byte 6 0) (fourth cs)))))))
 
 (defun base64->bytes (string)
-  (with-output-to-sequence (s)
-    (loop with len = (length string)
-          for pos = 0 then (+ pos 4)
-          until (>= pos len)
-          do (decode-4-chars s string pos))))
+  (let ((string (remove-if (lambda (c) (char= c #\Newline)) string)))
+    (with-output-to-sequence (s)
+      (loop with len = (length string)
+            for pos = 0 then (+ pos 4)
+            until (>= pos len)
+            do (decode-4-chars s string pos)))))
 
 ;;; Reading files
 

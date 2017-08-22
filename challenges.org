@@ -437,3 +437,19 @@ we correctly detected the ECB encryptions.
 
 #+RESULTS:
 : 1
+*** Use oracle to break ECB
+#+BEGIN_SRC lisp
+  (let* ((unknown (cp:base64->bytes "Um9sbGluJyBpbiBteSA1L
+  jAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvd
+  wpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNhe
+  SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"))
+         (oracle (cp:make-oracle unknown)))
+    (cp:bytes->ascii (cp:break-aes-ecb-with-oracle oracle)))
+#+END_SRC
+
+#+RESULTS:
+: "Rollin' in my 5.0
+: With my rag-top down so my hair can blow
+: The girlies on standby waving just to say hi
+: Did you stop? No, I just drove by
+: "

@@ -41,4 +41,5 @@
            #:encrypt-aes-128-cbc
            #:decrypt-aes-128-cbc
            #:encryption-oracle
-           #:make-oracle))
+           #:make-oracle
+           #:break-aes-ecb-with-oracle))
