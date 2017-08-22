@@ -453,3 +453,8 @@ we correctly detected the ECB encryptions.
 : The girlies on standby waving just to say hi
 : Did you stop? No, I just drove by
 : "
+**** TODO Profile this, it's super slow
+My guess is that most of the time is eaten by all the decryptions,
+but I can probably save memory use by getting smarter about my hash
+table keys (right now they're blocks as hex strings), and by taking
+less subsequences.
