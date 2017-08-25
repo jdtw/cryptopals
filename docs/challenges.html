@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2017-08-24 Thu 23:18 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cryptopals Challenges</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Cryptopals Challenges</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgb9a86bf">1. Set 1</a>
+<ul>
+<li><a href="#orgd0d6e02">1.1. Convert hex to base64</a></li>
+<li><a href="#org7aff14c">1.2. Fixed XOR</a></li>
+<li><a href="#orgf1d46f1">1.3. Single-byte XOR cipher</a></li>
+<li><a href="#org49aee03">1.4. Detect single-character XOR</a></li>
+<li><a href="#org8f2ed62">1.5. Implement repeating-key XOR</a></li>
+<li><a href="#orge9370e0">1.6. Break repeating-key XOR</a></li>
+<li><a href="#org483c507">1.7. AES in ECB mode</a></li>
+<li><a href="#org4ffc24d">1.8. Detect AES in ECB mode</a></li>
+</ul>
+</li>
+<li><a href="#org49c7e6a">2. Set 2</a>
+<ul>
+<li><a href="#orga49526d">2.1. Implement PKCS#7 padding</a></li>
+<li><a href="#org768c99e">2.2. Implement CBC mode</a></li>
+<li><a href="#org2abbfcf">2.3. An ECB/CBC detection oracle</a></li>
+<li><a href="#org991d48d">2.4. Byte-at-a-time ECB decryption (Simple)</a>
+<ul>
+<li><a href="#org11fcea1">2.4.1. Detect the block size</a></li>
+<li><a href="#orgf6377d3">2.4.2. Detect that the function is using ECB</a></li>
+<li><a href="#orgfc0155f">2.4.3. Use oracle to break ECB</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgb9a86bf" class="outline-2">
+<h2 id="orgb9a86bf"><span class="section-number-2">1</span> Set 1</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-orgd0d6e02" class="outline-3">
+<h3 id="orgd0d6e02"><span class="section-number-3">1.1</span> Convert hex to base64</h3>
+<div class="outline-text-3" id="text-1-1">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;base64 <span style="color: #bc6ec5;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
+
+</pre>
+</div>
+</div>
+<div id="outline-container-org7aff14c" class="outline-3">
+<h3 id="org7aff14c"><span class="section-number-3">1.2</span> Fixed XOR</h3>
+<div class="outline-text-3" id="text-1-2">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;hex
+ <span style="color: #bc6ec5;">(</span>cp:fixed-xor
+  <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"1c0111001f010100061a024b53535009181c"</span><span style="color: #2d9574;">)</span>
+  <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"686974207468652062756c6c277320657965"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"746865206B696420646F6E277420706C6179"
+
+</pre>
+</div>
+</div>
+<div id="outline-container-orgf1d46f1" class="outline-3">
+<h3 id="orgf1d46f1"><span class="section-number-3">1.3</span> Single-byte XOR cipher</h3>
+<div class="outline-text-3" id="text-1-3">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>car
+ <span style="color: #bc6ec5;">(</span>cp:break-single-byte-xor
+  <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+(:SCORE 44.4112472277668d0 :KEY 88 :STRING "Cooking MC's like a pound of bacon")
+
+</pre>
+<p>
+To score English text, I used a Chi-squared test. I had to play with the
+frequencies a fair amount &#x2013; just using a-z was not giving great results. The
+most important thing I did was to add a penalty for uncommon characters. Common
+punctuation is ignored, but uncommon punctuation is penalized (see the <code>#\Nul</code>
+frequency below).
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp">cp:*frequencies*
+</pre>
+</div>
+
+<pre class="example">
+((#\a . 0.0651738d0) (#\b . 0.0124248d0) (#\c . 0.0217339d0)
+ (#\d . 0.0349835d0) (#\e . 0.1041442d0) (#\f . 0.0197881d0) (#\g . 0.015861d0)
+ (#\h . 0.0492888d0) (#\i . 0.0558094d0) (#\j . 9.033d-4) (#\k . 0.0050529d0)
+ (#\l . 0.033149d0) (#\m . 0.0202124d0) (#\n . 0.0564513d0) (#\o . 0.0596302d0)
+ (#\p . 0.0137645d0) (#\q . 8.606d-4) (#\r . 0.0497563d0) (#\s . 0.051576d0)
+ (#\t . 0.0729357d0) (#\u . 0.0225134d0) (#\v . 0.0082903d0)
+ (#\w . 0.0171272d0) (#\x . 0.0013692d0) (#\y . 0.0145984d0) (#\z . 7.836d-4)
+ (#\  . 0.1918182d0) (#\Nul . 0.001d0))
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org49aee03" class="outline-3">
+<h3 id="org49aee03"><span class="section-number-3">1.4</span> Detect single-character XOR</h3>
+<div class="outline-text-3" id="text-1-4">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">flet</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>top-score <span style="color: #67b11d;">(</span>hex<span style="color: #67b11d;">)</span>
+         <span style="color: #67b11d;">(</span>first <span style="color: #b1951d;">(</span>cp:break-single-byte-xor <span style="color: #4f97d7;">(</span>cp:hex-&gt;bytes hex<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
+  <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #2d9574;">(</span><span style="color: #67b11d;">(</span>scores <span style="color: #b1951d;">(</span><span style="color: #4f97d7; font-weight: bold;">with-open-file</span> <span style="color: #4f97d7;">(</span>in <span style="color: #2d9574;">"4.txt"</span><span style="color: #4f97d7;">)</span>
+                  <span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> for l = <span style="color: #bc6ec5;">(</span>read-line in nil<span style="color: #bc6ec5;">)</span>
+                        while l collect <span style="color: #bc6ec5;">(</span>nconc <span style="color: #2d9574;">(</span>list <span style="color: #4f97d7;">:line</span> l<span style="color: #2d9574;">)</span>
+                                               <span style="color: #2d9574;">(</span>top-score l<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+    <span style="color: #2d9574;">(</span>car <span style="color: #67b11d;">(</span>sort scores #'&lt; <span style="color: #4f97d7;">:key</span> <span style="color: #b1951d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #4f97d7;">(</span>x<span style="color: #4f97d7;">)</span> <span style="color: #4f97d7;">(</span>getf x <span style="color: #4f97d7;">:score</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+(:LINE "7b5a4215415d544115415d5015455447414c155c46155f4058455c5b523f" :SCORE
+ 51.34496174418811d0 :KEY 53 :STRING "Now that the party is jumping
+")
+
+</pre>
+</div>
+</div>
+<div id="outline-container-org8f2ed62" class="outline-3">
+<h3 id="org8f2ed62"><span class="section-number-3">1.5</span> Implement repeating-key XOR</h3>
+<div class="outline-text-3" id="text-1-5">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;hex
+ <span style="color: #bc6ec5;">(</span>cp:repeating-xor <span style="color: #2d9574;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"ICE"</span><span style="color: #2d9574;">)</span>
+                   <span style="color: #2d9574;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"Burning 'em, if you ain't quick and nimble</span>
+<span style="color: #2d9574;">I go crazy when I hear a cymbal"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"0B3637272A2B2E63622C2E69692A23693A2A3C6324202D623D63343C2A26226324272765272A282B2F20430A652E2C652A3124333A653E2B2027630C692B20283165286326302E27282F"
+
+</pre>
+</div>
+</div>
+<div id="outline-container-orge9370e0" class="outline-3">
+<h3 id="orge9370e0"><span class="section-number-3">1.6</span> Break repeating-key XOR</h3>
+<div class="outline-text-3" id="text-1-6">
+<p>
+Test our hamming distance calculation:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:hamming-distance <span style="color: #bc6ec5;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"this is a test"</span><span style="color: #bc6ec5;">)</span>
+                     <span style="color: #bc6ec5;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"wokka wokka!!!"</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+37
+
+</pre>
+<p>
+Now, attempt to find the key size of the XOR'd challenge text. My
+<code>FIND-XOR-KEYSIZE</code> implementation averages <code>BLOCK-COUNT</code> blocks. Looking at the
+output, it converges on a key size of 29 bytes, which is what we'll use to try
+and break the cipher.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> with bytes = <span style="color: #bc6ec5;">(</span>cp:read-base64-file <span style="color: #2d9574;">"6.txt"</span><span style="color: #bc6ec5;">)</span>
+      for i from <span style="color: #a45bad;">1</span> to <span style="color: #a45bad;">20</span>
+      collect <span style="color: #bc6ec5;">(</span>cp:find-xor-keysize bytes <span style="color: #4f97d7;">:block-count</span> i<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+(5 5 5 5 5 5 5 29 29 29 29 29 29 29 29 29 29 29 29 29)
+
+</pre>
+<p>
+And now try to actually break repeating XOR.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>bytes <span style="color: #67b11d;">(</span>cp:read-base64-file <span style="color: #2d9574;">"6.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
+  <span style="color: #bc6ec5;">(</span>cp:bytes-&gt;ascii
+   <span style="color: #2d9574;">(</span>cp:break-repeating-xor
+    <span style="color: #67b11d;">(</span>cp:find-xor-keysize bytes<span style="color: #67b11d;">)</span>
+    bytes<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"I'm back and I'm ringin' the bell
+A rockin' on the mike while the fly girls yell
+In ecstasy in the back of me
+Well that's my DJ Deshay cuttin' all them Z's
+Hittin' hard and the girlies goin' crazy
+Vanilla's on the mike, man I'm not lazy.
+
+I'm lettin' my drug kick in
+It controls my mouth and I begin
+To just let it flow, let my concepts go
+My posse's to the side yellin', Go Vanilla Go!
+
+Smooth 'cause that's the way I will be
+And if you don't give a damn, then
+Why you starin' at me
+So get off 'cause I control the stage
+There's no dissin' allowed
+I'm in my own phase
+The girlies sa y they love me and that is ok
+And I can dance better than any kid n' play
+
+Stage 2 -- Yea the one ya' wanna listen to
+It's off my head so let the beat play through
+So I can funk it up and make it sound good
+1-2-3 Yo -- Knock on some wood
+For good luck, I like my rhymes atrocious
+Supercalafragilisticexpialidocious
+I'm an effect and that you can bet
+I can take a fly girl and make her wet.
+
+I'm like Samson -- Samson to Delilah
+There's no denyin', You can try to hang
+But you'll keep tryin' to get my style
+Over and over, practice makes perfect
+But not if you're a loafer.
+
+You'll get nowhere, no place, no time, no girls
+Soon -- Oh my God, homebody, you probably eat
+Spaghetti with a spoon! Come on and say it!
+
+VIP. Vanilla Ice yep, yep, I'm comin' hard like a rhino
+Intoxicating so you stagger like a wino
+So punks stop trying and girl stop cryin'
+Vanilla Ice is sellin' and you people are buyin'
+'Cause why the freaks are jockin' like Crazy Glue
+Movin' and groovin' trying to sing along
+All through the ghetto groovin' this here song
+Now you're amazed by the VIP posse.
+
+Steppin' so hard like a German Nazi
+Startled by the bases hittin' ground
+There's no trippin' on mine, I'm just gettin' down
+Sparkamatic, I'm hangin' tight like a fanatic
+You trapped me once and I thought that
+You might have it
+So step down and lend me your ear
+'89 in my time! You, '90 is my year.
+
+You're weakenin' fast, YO! and I can tell it
+Your body's gettin' hot, so, so I can smell it
+So don't be mad and don't be sad
+'Cause the lyrics belong to ICE, You can call me Dad
+You're pitchin' a fit, so step back and endure
+Let the witch doctor, Ice, do the dance to cure
+So come up close and don't be square
+You wanna battle me -- Anytime, anywhere
+
+You thought that I was weak, Boy, you're dead wrong
+So come on, everybody and sing this song
+
+Say -- Play that funky music Say, go white boy, go white boy go
+play that funky music Go white boy, go white boy, go
+Lay down and boogie and play that funky music till you die.
+
+Play that funky music Come on, Come on, let me hear
+Play that funky music white boy you say it, say it
+Play that funky music A little louder now
+Play that funky music, white boy Come on, Come on, Come on
+Play that funky music
+"
+</pre>
+</div>
+</div>
+<div id="outline-container-org483c507" class="outline-3">
+<h3 id="org483c507"><span class="section-number-3">1.7</span> AES in ECB mode</h3>
+<div class="outline-text-3" id="text-1-7">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;ascii
+ <span style="color: #bc6ec5;">(</span>cp:decrypt-aes-128-ecb
+  <span style="color: #2d9574;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"YELLOW SUBMARINE"</span><span style="color: #2d9574;">)</span>
+  <span style="color: #2d9574;">(</span>cp:read-base64-file <span style="color: #2d9574;">"7.txt"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"I'm back and I'm ringin' the bell
+A rockin' on the mike while the fly girls yell
+In ecstasy in the back of me
+Well that's my DJ Deshay cuttin' all them Z's
+Hittin' hard and the girlies goin' crazy
+Vanilla's on the mike, man I'm not lazy.
+
+I'm lettin' my drug kick in
+It controls my mouth and I begin
+To just let it flow, let my concepts go
+My posse's to the side yellin', Go Vanilla Go!
+
+Smooth 'cause that's the way I will be
+And if you don't give a damn, then
+Why you starin' at me
+So get off 'cause I control the stage
+There's no dissin' allowed
+I'm in my own phase
+The girlies sa y they love me and that is ok
+And I can dance better than any kid n' play
+
+Stage 2 -- Yea the one ya' wanna listen to
+It's off my head so let the beat play through
+So I can funk it up and make it sound good
+1-2-3 Yo -- Knock on some wood
+For good luck, I like my rhymes atrocious
+Supercalafragilisticexpialidocious
+I'm an effect and that you can bet
+I can take a fly girl and make her wet.
+
+I'm like Samson -- Samson to Delilah
+There's no denyin', You can try to hang
+But you'll keep tryin' to get my style
+Over and over, practice makes perfect
+But not if you're a loafer.
+
+You'll get nowhere, no place, no time, no girls
+Soon -- Oh my God, homebody, you probably eat
+Spaghetti with a spoon! Come on and say it!
+
+VIP. Vanilla Ice yep, yep, I'm comin' hard like a rhino
+Intoxicating so you stagger like a wino
+So punks stop trying and girl stop cryin'
+Vanilla Ice is sellin' and you people are buyin'
+'Cause why the freaks are jockin' like Crazy Glue
+Movin' and groovin' trying to sing along
+All through the ghetto groovin' this here song
+Now you're amazed by the VIP posse.
+
+Steppin' so hard like a German Nazi
+Startled by the bases hittin' ground
+There's no trippin' on mine, I'm just gettin' down
+Sparkamatic, I'm hangin' tight like a fanatic
+You trapped me once and I thought that
+You might have it
+So step down and lend me your ear
+'89 in my time! You, '90 is my year.
+
+You're weakenin' fast, YO! and I can tell it
+Your body's gettin' hot, so, so I can smell it
+So don't be mad and don't be sad
+'Cause the lyrics belong to ICE, You can call me Dad
+You're pitchin' a fit, so step back and endure
+Let the witch doctor, Ice, do the dance to cure
+So come up close and don't be square
+You wanna battle me -- Anytime, anywhere
+
+You thought that I was weak, Boy, you're dead wrong
+So come on, everybody and sing this song
+
+Say -- Play that funky music Say, go white boy, go white boy go
+play that funky music Go white boy, go white boy, go
+Lay down and boogie and play that funky music till you die.
+
+Play that funky music Come on, Come on, let me hear
+Play that funky music white boy you say it, say it
+Play that funky music A little louder now
+Play that funky music, white boy Come on, Come on, Come on
+Play that funky music
+"
+</pre>
+</div>
+</div>
+<div id="outline-container-org4ffc24d" class="outline-3">
+<h3 id="org4ffc24d"><span class="section-number-3">1.8</span> Detect AES in ECB mode</h3>
+<div class="outline-text-3" id="text-1-8">
+<p>
+To detect collisions, <code>DETECT-AES-128-ECB</code> breaks each line up into blocks
+and compares each block against the others, looking for blocks that are equal.
+It returns the number of equal blocks if ECB is detected, or <code>NIL</code>
+otherwise.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>lines <span style="color: #67b11d;">(</span>cp:read-hex-line-file <span style="color: #2d9574;">"8.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
+  <span style="color: #bc6ec5;">(</span>remove-if #'null <span style="color: #2d9574;">(</span>mapcar <span style="color: #67b11d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #b1951d;">(</span>line<span style="color: #b1951d;">)</span>
+                              <span style="color: #b1951d;">(</span>cons <span style="color: #4f97d7;">(</span>cp:detect-aes-128-ecb line<span style="color: #4f97d7;">)</span>
+                                    <span style="color: #4f97d7;">(</span>cp:bytes-&gt;hex line<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>
+                            lines<span style="color: #2d9574;">)</span>
+             <span style="color: #4f97d7;">:key</span> #'car<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+((6
+  . "D880619740A8A19B7840A8A31C810A3D08649AF70DC06F4FD5D2D69C744CD283E2DD052F6B641DBF9D11B0348542BB5708649AF70DC06F4FD5D2D69C744CD2839475C9DFDBC1D46597949D9C7E82BF5A08649AF70DC06F4FD5D2D69C744CD28397A93EAB8D6AECD566489154789A6B0308649AF70DC06F4FD5D2D69C744CD283D403180C98C8F6DB1F2A3F9C4040DEB0AB51B29933F2C123C58386B06FBA186A"))
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org49c7e6a" class="outline-2">
+<h2 id="org49c7e6a"><span class="section-number-2">2</span> Set 2</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-orga49526d" class="outline-3">
+<h3 id="orga49526d"><span class="section-number-3">2.1</span> Implement PKCS#7 padding</h3>
+<div class="outline-text-3" id="text-2-1">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:pad-pkcs7 <span style="color: #bc6ec5;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"YELLOW SUBMARINE"</span><span style="color: #bc6ec5;">)</span> <span style="color: #4f97d7;">:block-size</span> <span style="color: #a45bad;">20</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+#(89 69 76 76 79 87 32 83 85 66 77 65 82 73 78 69 4 4 4 4)
+
+</pre>
+</div>
+</div>
+<div id="outline-container-org768c99e" class="outline-3">
+<h3 id="org768c99e"><span class="section-number-3">2.2</span> Implement CBC mode</h3>
+<div class="outline-text-3" id="text-2-2">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;ascii
+ <span style="color: #bc6ec5;">(</span>cp:unpad-pkcs7
+  <span style="color: #2d9574;">(</span>cp:decrypt-aes-128-cbc
+   <span style="color: #67b11d;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"YELLOW SUBMARINE"</span><span style="color: #67b11d;">)</span>
+   <span style="color: #67b11d;">(</span>make-array <span style="color: #a45bad;">16</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #a45bad;">0</span><span style="color: #67b11d;">)</span>
+   <span style="color: #67b11d;">(</span>cp:read-base64-file <span style="color: #2d9574;">"10.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"I'm back and I'm ringin' the bell
+A rockin' on the mike while the fly girls yell
+In ecstasy in the back of me
+Well that's my DJ Deshay cuttin' all them Z's
+Hittin' hard and the girlies goin' crazy
+Vanilla's on the mike, man I'm not lazy.
+
+I'm lettin' my drug kick in
+It controls my mouth and I begin
+To just let it flow, let my concepts go
+My posse's to the side yellin', Go Vanilla Go!
+
+Smooth 'cause that's the way I will be
+And if you don't give a damn, then
+Why you starin' at me
+So get off 'cause I control the stage
+There's no dissin' allowed
+I'm in my own phase
+The girlies sa y they love me and that is ok
+And I can dance better than any kid n' play
+
+Stage 2 -- Yea the one ya' wanna listen to
+It's off my head so let the beat play through
+So I can funk it up and make it sound good
+1-2-3 Yo -- Knock on some wood
+For good luck, I like my rhymes atrocious
+Supercalafragilisticexpialidocious
+I'm an effect and that you can bet
+I can take a fly girl and make her wet.
+
+I'm like Samson -- Samson to Delilah
+There's no denyin', You can try to hang
+But you'll keep tryin' to get my style
+Over and over, practice makes perfect
+But not if you're a loafer.
+
+You'll get nowhere, no place, no time, no girls
+Soon -- Oh my God, homebody, you probably eat
+Spaghetti with a spoon! Come on and say it!
+
+VIP. Vanilla Ice yep, yep, I'm comin' hard like a rhino
+Intoxicating so you stagger like a wino
+So punks stop trying and girl stop cryin'
+Vanilla Ice is sellin' and you people are buyin'
+'Cause why the freaks are jockin' like Crazy Glue
+Movin' and groovin' trying to sing along
+All through the ghetto groovin' this here song
+Now you're amazed by the VIP posse.
+
+Steppin' so hard like a German Nazi
+Startled by the bases hittin' ground
+There's no trippin' on mine, I'm just gettin' down
+Sparkamatic, I'm hangin' tight like a fanatic
+You trapped me once and I thought that
+You might have it
+So step down and lend me your ear
+'89 in my time! You, '90 is my year.
+
+You're weakenin' fast, YO! and I can tell it
+Your body's gettin' hot, so, so I can smell it
+So don't be mad and don't be sad
+'Cause the lyrics belong to ICE, You can call me Dad
+You're pitchin' a fit, so step back and endure
+Let the witch doctor, Ice, do the dance to cure
+So come up close and don't be square
+You wanna battle me -- Anytime, anywhere
+
+You thought that I was weak, Boy, you're dead wrong
+So come on, everybody and sing this song
+
+Say -- Play that funky music Say, go white boy, go white boy go
+play that funky music Go white boy, go white boy, go
+Lay down and boogie and play that funky music till you die.
+
+Play that funky music Come on, Come on, let me hear
+Play that funky music white boy you say it, say it
+Play that funky music A little louder now
+Play that funky music, white boy Come on, Come on, Come on
+Play that funky music
+"
+</pre>
+</div>
+</div>
+<div id="outline-container-org2abbfcf" class="outline-3">
+<h3 id="org2abbfcf"><span class="section-number-3">2.3</span> An ECB/CBC detection oracle</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+Run <code>ENCRYPTION-ORACLE</code> ten times, and collect the results. My oracle
+returns multiple values &#x2013; the encrypted output, and <code>T</code> for ECB or
+<code>NIL</code> for CBC. Run the ECB detector on the oracle output, and ensure
+we correctly detected the ECB encryptions.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let*</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>input <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* <span style="color: #a45bad;">16</span> <span style="color: #a45bad;">4</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #b1951d;">(</span>char-code #\A<span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>runs <span style="color: #67b11d;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> repeat <span style="color: #a45bad;">10</span>
+                   collect <span style="color: #b1951d;">(</span>multiple-value-list <span style="color: #4f97d7;">(</span>cp:encryption-oracle input<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>results <span style="color: #67b11d;">(</span>mapcar <span style="color: #b1951d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #4f97d7;">(</span>r<span style="color: #4f97d7;">)</span> <span style="color: #4f97d7;">(</span>cons <span style="color: #bc6ec5;">(</span>second r<span style="color: #bc6ec5;">)</span>
+                                          <span style="color: #bc6ec5;">(</span>cp:detect-aes-128-ecb <span style="color: #2d9574;">(</span>first r<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span>
+                        runs<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
+  <span style="color: #bc6ec5;">(</span>values results <span style="color: #2d9574;">(</span>every <span style="color: #67b11d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #b1951d;">(</span>r<span style="color: #b1951d;">)</span> <span style="color: #b1951d;">(</span>or <span style="color: #4f97d7;">(</span>and <span style="color: #bc6ec5;">(</span>car r<span style="color: #bc6ec5;">)</span> <span style="color: #bc6ec5;">(</span>cdr r<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+                                         <span style="color: #4f97d7;">(</span>not <span style="color: #bc6ec5;">(</span>or <span style="color: #2d9574;">(</span>car r<span style="color: #2d9574;">)</span> <span style="color: #2d9574;">(</span>cdr r<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>
+                         results<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+((T . 3) (T . 3) (NIL) (NIL) (NIL) (NIL) (T . 3) (T . 3) (NIL) (T . 3))
+T
+
+</pre>
+</div>
+</div>
+<div id="outline-container-org991d48d" class="outline-3">
+<h3 id="org991d48d"><span class="section-number-3">2.4</span> Byte-at-a-time ECB decryption (Simple)</h3>
+<div class="outline-text-3" id="text-2-4">
+</div><div id="outline-container-org11fcea1" class="outline-4">
+<h4 id="org11fcea1"><span class="section-number-4">2.4.1</span> Detect the block size</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">cp:with-oracle</span> <span style="color: #bc6ec5;">(</span>oracle<span style="color: #bc6ec5;">)</span>
+  <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> for i from <span style="color: #a45bad;">1</span> to <span style="color: #a45bad;">64</span>
+        for encrypted = <span style="color: #2d9574;">(</span>oracle <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* i <span style="color: #a45bad;">2</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #a45bad;">97</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+        for blocks = <span style="color: #2d9574;">(</span>cp:blockify encrypted <span style="color: #4f97d7;">:block-size</span> i<span style="color: #2d9574;">)</span>
+        until <span style="color: #2d9574;">(</span>equalp <span style="color: #67b11d;">(</span>first blocks<span style="color: #67b11d;">)</span> <span style="color: #67b11d;">(</span>second blocks<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+        finally <span style="color: #2d9574;">(</span><span style="color: #4f97d7; font-weight: bold;">return</span> i<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+16
+
+</pre>
+</div>
+</div>
+<div id="outline-container-orgf6377d3" class="outline-4">
+<h4 id="orgf6377d3"><span class="section-number-4">2.4.2</span> Detect that the function is using ECB</h4>
+<div class="outline-text-4" id="text-2-4-2">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">cp:with-oracle</span> <span style="color: #bc6ec5;">(</span>oracle<span style="color: #bc6ec5;">)</span>
+  <span style="color: #bc6ec5;">(</span>cp:detect-aes-128-ecb
+   <span style="color: #2d9574;">(</span>oracle <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* <span style="color: #a45bad;">16</span> <span style="color: #a45bad;">2</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #a45bad;">97</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+1
+
+</pre>
+</div>
+</div>
+<div id="outline-container-orgfc0155f" class="outline-4">
+<h4 id="orgfc0155f"><span class="section-number-4">2.4.3</span> Use oracle to break ECB</h4>
+<div class="outline-text-4" id="text-2-4-3">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>unknown <span style="color: #67b11d;">(</span>cp:base64-&gt;bytes <span style="color: #2d9574;">"Um9sbGluJyBpbiBteSA1L</span>
+<span style="color: #2d9574;">jAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvd</span>
+<span style="color: #2d9574;">wpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNhe</span>
+<span style="color: #2d9574;">SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
+  <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">cp:with-oracle</span> <span style="color: #2d9574;">(</span>oracle unknown<span style="color: #2d9574;">)</span>
+    <span style="color: #2d9574;">(</span>cp:bytes-&gt;ascii <span style="color: #67b11d;">(</span>cp:break-aes-ecb-with-oracle #'oracle<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"Rollin' in my 5.0
+With my rag-top down so my hair can blow
+The girlies on standby waving just to say hi
+Did you stop? No, I just drove by
+"
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2017-08-24 Thu 23:18</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
