@@ -50,7 +50,7 @@ The bcrypt-handle object is not safe to use after freeing it."))
   (get-bcrypt-handle handle))
 
 (defmethod get-bcrypt-handle ((handle bcrypt-handle))
-  (mem-ref (pointer-to-handle handle) :pointer))
+  (sb-sys:sap-ref-sap (pointer-to-handle handle) 0))
 
 (defmethod free-bcrypt-handle ((handle bcrypt-handle))
   (foreign-free (pointer-to-handle handle))
@@ -229,8 +229,8 @@ The bcrypt-handle object is not safe to use after freeing it."))
                                          +bcrypt-chaining-mode+
                                          (ecase value
                                            (:ecb +bcrypt-chain-mode-ecb+))))
-    (:iv (set-buffer-property +bcrypt-initialization-vector+ value))
-    (:key-length (set-ulong-property +bcrypt-key-length+ value))))
+    (:iv (set-buffer-property handle +bcrypt-initialization-vector+ value))
+    (:key-length (set-ulong-property handle +bcrypt-key-length+ value))))
 
 (defun get-property (handle property)
   (ecase property
@@ -239,74 +239,114 @@ The bcrypt-handle object is not safe to use after freeing it."))
     (:chaining-mode (get-string-property handle +bcrypt-chaining-mode+))
     (:iv (get-buffer-property handle +bcrypt-initialization-vector+))))
 
-(defmacro with-aes-ecb-algorithm ((var) &body body)
-  `(let ((,var (make-instance 'bcrypt-alg-handle)))
-     (unwind-protect
-          (progn
-            (bcrypt-open-algorithm-provider (pointer-to-handle ,var)
-                                            +bcrypt-aes-algorithm+
-                                            (null-pointer)
-                                            0)
-            (unwind-protect (progn (set-property ,var :chaining-mode :ecb) ,@body)
-              (close-bcrypt-handle ,var)))
-       (free-bcrypt-handle ,var))))
+(defclass crypt ()
+  ((algorithm :accessor crypt-algorithm
+              :initform (make-instance 'bcrypt-alg-handle))
+   (key :accessor crypt-key
+        :initform (make-instance 'bcrypt-key-handle))
+   (buffer :accessor crypt-buffer
+           :initform nil)
+   (buffer-size :accessor crypt-buffer-size
+                :initform 0)
+   (byte-count :accessor crypt-byte-count
+               :initform (foreign-alloc :ulong :initial-element 0))
+   (input-buffer :accessor crypt-input-buffer
+                 :initform nil)
+   (input-buffer-size :accessor crypt-input-buffer-size
+                      :initform 0
+                      :type (unsigned-byte 32))))
 
-(defmacro with-symmetric-key ((var alg secret) &body body)
-  (let ((secret-sym (gensym)) (input (gensym)) (secret-len (gensym)))
-    `(let* ((,secret-sym ,secret)
-            (,secret-len (length ,secret-sym))
-            (,var (make-instance 'bcrypt-key-handle)))
-       (unwind-protect
-            (progn
-              (with-foreign-array (,input
-                                   ,secret-sym
-                                   `(:array :uint8 ,,secret-len))
-                (bcrypt-generate-symmetric-key ,alg
-                                               (pointer-to-handle ,var)
-                                               (null-pointer)
-                                               0
-                                               ,input
-                                               ,secret-len
-                                               0))
-              (unwind-protect (progn ,@body)
-                (close-bcrypt-handle ,var)))
-         (free-bcrypt-handle ,var)))))
+(defun crypt-open-aes256-ecb (crypt secret)
+  (let ((success nil) (secret-len (length secret)))
+    (unwind-protect
+         (progn
+           (bcrypt-open-algorithm-provider
+            (pointer-to-handle (crypt-algorithm crypt))
+            +bcrypt-aes-algorithm+
+            (null-pointer)
+            0)
+           (set-property (crypt-algorithm crypt) :chaining-mode :ecb)
+           (with-foreign-array (input secret `(:array :uint8 ,secret-len))
+             (bcrypt-generate-symmetric-key
+              (crypt-algorithm crypt)
+              (pointer-to-handle (crypt-key crypt))
+              (null-pointer)
+              0
+              input
+              secret-len
+              0))
+           (setf success t))
+      (unless success
+        (when (not (null-pointer-p (get-bcrypt-handle (crypt-algorithm crypt))))
+          (close-bcrypt-handle (crypt-algorithm crypt)))
+        (when (not (null-pointer-p (get-bcrypt-handle (crypt-key crypt))))
+          (close-bcrypt-handle (crypt-key crypt)))))))
 
-(defun crypt (func key input)
+(defun crypt-copy-input-buffer (crypt input input-length)
+  (declare (type (unsigned-byte 32) input-length)
+           (type (vector (unsigned-byte 8) *) input)
+           (optimize speed))
+  (when (< (crypt-input-buffer-size crypt) input-length)
+    (when (crypt-input-buffer crypt) (foreign-free (crypt-input-buffer crypt)))
+    (setf (crypt-input-buffer crypt) (foreign-alloc :uint8 :count input-length)
+          (crypt-input-buffer-size crypt) input-length))
+  (dotimes (i input-length)
+    (setf (sb-sys:sap-ref-8 (crypt-input-buffer crypt) i) (aref input i))))
+
+(defun crypt-free (crypt)
+  (when (not (null-pointer-p (get-bcrypt-handle (crypt-algorithm crypt))))
+    (close-bcrypt-handle (crypt-algorithm crypt)))
+  (free-bcrypt-handle (crypt-algorithm crypt))
+  (when (not (null-pointer-p (get-bcrypt-handle (crypt-key crypt))))
+    (close-bcrypt-handle (crypt-key crypt)))
+  (free-bcrypt-handle (crypt-key crypt))
+  (when (crypt-buffer crypt) (foreign-free (crypt-buffer crypt)))
+  (foreign-free (crypt-byte-count crypt)))
+
+(defun en/de-crypt (crypt func input)
+  (declare (type (vector (unsigned-byte 8) *) input)
+           (type function func)
+           (optimize speed))
   (let ((input-len (length input)))
-    (with-foreign-array (foreign-input input `(:array :uint8 ,input-len))
-      (with-foreign-object (byte-count :ulong)
-        (funcall func
-                 key
-                 foreign-input
-                 input-len
-                 (null-pointer)
-                 (null-pointer)
-                 0
-                 (null-pointer)
-                 0
-                 byte-count
-                 0)
-        (let ((output (make-shareable-byte-vector (mem-ref byte-count :ulong))))
-          (with-pointer-to-vector-data (foreign-output output)
-            (funcall func
-                     key
-                     foreign-input
-                     input-len
-                     (null-pointer)
-                     (null-pointer)
-                     0
-                     foreign-output
-                     (mem-ref byte-count :ulong)
-                     byte-count
-                     0))
-          output)))))
+    (crypt-copy-input-buffer crypt input input-len)
+    (funcall func
+             (crypt-key crypt)
+             (crypt-input-buffer crypt)
+             input-len
+             (null-pointer)
+             (null-pointer)
+             0
+             (null-pointer)
+             0
+             (crypt-byte-count crypt)
+             0)
+    (let ((size (sb-sys:sap-ref-32 (crypt-byte-count crypt) 0)))
+      (when (< (crypt-buffer-size crypt) size)
+        (when (crypt-buffer crypt) (foreign-free (crypt-buffer crypt)))
+        (setf (crypt-buffer crypt) (foreign-alloc :uint8 :count size)
+              (crypt-buffer-size crypt) size)))
+    (funcall func
+             (crypt-key crypt)
+             (crypt-input-buffer crypt)
+             input-len
+             (null-pointer)
+             (null-pointer)
+             0
+             (crypt-buffer crypt)
+             (mem-ref (crypt-byte-count crypt) :ulong)
+             (crypt-byte-count crypt)
+             0)
+    (sb-sys:sap-ref-octets (crypt-buffer crypt)
+                           0
+                           (sb-sys:sap-ref-32 (crypt-byte-count crypt) 0))))
 
-(defun decrypt (key input)
-  (crypt #'bcrypt-decrypt key input))
+(declaim (inline decrypt))
+(defun decrypt (crypt input)
+  (en/de-crypt crypt #'bcrypt-decrypt input))
 
-(defun encrypt (key input)
-  (crypt #'bcrypt-encrypt key input))
+(declaim (inline encrypt))
+(defun encrypt (crypt input)
+  (en/de-crypt crypt #'bcrypt-encrypt input))
 
 (defun gen-random (size)
   (let ((random (make-shareable-byte-vector size)))

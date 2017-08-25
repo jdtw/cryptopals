@@ -32,6 +32,11 @@
            #:hamming-distance
            #:find-xor-keysize
            #:break-repeating-xor
+           #:crypt
+           #:crypt-free
+           #:encrypt
+           #:decrypt
+           #:with-aes-128-ecb
            #:gen-random
            #:encrypt-aes-128-ecb
            #:decrypt-aes-128-ecb
@@ -41,5 +46,5 @@
            #:encrypt-aes-128-cbc
            #:decrypt-aes-128-cbc
            #:encryption-oracle
-           #:make-oracle
+           #:with-oracle
            #:break-aes-ecb-with-oracle))

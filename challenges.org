@@ -412,15 +412,14 @@ we correctly detected the ECB encryptions.
 #+END_SRC
 
 #+RESULTS:
-: ((T . 3) (T . 3) (T . 3) (NIL) (T . 3) (T . 3) (NIL) (T . 3) (NIL) (NIL))
+: ((NIL) (T . 3) (T . 3) (T . 3) (T . 3) (NIL) (T . 3) (T . 3) (NIL) (T . 3))
 : T
 ** Byte-at-a-time ECB decryption (Simple)
 *** Detect the block size
 #+BEGIN_SRC lisp
-  (let ((oracle (cp:make-oracle)))
+  (cp:with-oracle (oracle)
     (loop for i from 1 to 64
-          for encrypted = (funcall oracle
-                                   (make-array (* i 2) :initial-element 97))
+          for encrypted = (oracle (make-array (* i 2) :initial-element 97))
           for blocks = (cp:blockify encrypted :block-size i)
           until (equalp (first blocks) (second blocks))
           finally (return i)))
@@ -430,21 +429,21 @@ we correctly detected the ECB encryptions.
 : 16
 *** Detect that the function is using ECB
 #+BEGIN_SRC lisp
-  (let ((oracle (cp:make-oracle)))
+  (cp:with-oracle (oracle)
     (cp:detect-aes-128-ecb
-     (funcall oracle (make-array (* 16 2) :initial-element 97))))
+     (oracle (make-array (* 16 2) :initial-element 97))))
 #+END_SRC
 
 #+RESULTS:
 : 1
 *** Use oracle to break ECB
 #+BEGIN_SRC lisp
-  (let* ((unknown (cp:base64->bytes "Um9sbGluJyBpbiBteSA1L
+  (let ((unknown (cp:base64->bytes "Um9sbGluJyBpbiBteSA1L
   jAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvd
   wpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNhe
-  SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"))
-         (oracle (cp:make-oracle unknown)))
-    (cp:bytes->ascii (cp:break-aes-ecb-with-oracle oracle)))
+  SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK")))
+    (cp:with-oracle (oracle unknown)
+      (cp:bytes->ascii (cp:break-aes-ecb-with-oracle #'oracle))))
 #+END_SRC
 
 #+RESULTS:
@@ -453,8 +452,3 @@ we correctly detected the ECB encryptions.
 : The girlies on standby waving just to say hi
 : Did you stop? No, I just drove by
 : "
-**** TODO Profile this, it's super slow
-My guess is that most of the time is eaten by all the decryptions,
-but I can probably save memory use by getting smarter about my hash
-table keys (right now they're blocks as hex strings), and by taking
-less subsequences.
