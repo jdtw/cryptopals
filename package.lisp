@@ -16,6 +16,9 @@
                 #:get-output-stream-sequence
                 #:with-input-from-sequence
                 #:with-output-to-sequence)
+  (:import-from #:str
+                #:split
+                #:join)
   (:export #:bytes->ascii
            #:ascii->bytes
            #:bytes->hex
@@ -47,4 +50,12 @@
            #:decrypt-aes-128-cbc
            #:encryption-oracle
            #:with-oracle
-           #:break-aes-ecb-with-oracle))
+           #:break-aes-ecb-with-oracle
+           #:parse-cookie
+           #:make-cookie
+           #:profile-role
+           #:make-profiler
+           #:profile-for
+           #:make-encrypted-user-profiler
+           #:decrypt-and-parse-profile
+           #:profile-role))

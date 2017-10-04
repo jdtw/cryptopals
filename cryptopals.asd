@@ -7,7 +7,8 @@
   :depends-on (#:babel
                #:babel-streams
                #:cffi
-               #:alexandria)
+               #:alexandria
+               #:str)
   :serial t
   :components ((:file "package")
                (:file "strings")
@@ -16,4 +17,5 @@
                (:file "xor")
                (:file "bcrypt")
                (:file "aes")
+               (:file "cookie")
                (:file "cryptopals")))

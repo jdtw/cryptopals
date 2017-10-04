@@ -452,3 +452,60 @@ we correctly detected the ECB encryptions.
 : The girlies on standby waving just to say hi
 : Did you stop? No, I just drove by
 : "
+** ECB cut-and-paste
+*** Write a k=v parsing routine
+#+BEGIN_SRC lisp
+  (cp:parse-cookie "foo=bar&baz=qux&zap=zazzle")
+#+END_SRC
+
+#+RESULTS:
+: (("foo" . "bar") ("baz" . "qux") ("zap" . "zazzle"))
+
+*** Write a function that encodes a user profile
+#+BEGIN_SRC lisp
+  (let ((user-profiler (cp:make-profiler "user")))
+    (list (cp:profile-for user-profiler "alice")
+          (cp:profile-for user-profiler "bob")
+          (cp:profile-for user-profiler "eve")))
+#+END_SRC
+
+#+RESULTS:
+: ("email=alice&uid=0&role=user" "email=bob&uid=1&role=user"
+:  "email=eve&uid=2&role=user")
+
+*** Carry out a cut-paste attack
+~MAKE-ENCRYPTED-USER-PROFILER~ is just an AES ECB wrapper around
+~MAKE-PROFILER~. Use carefully crafted email addresses to get blocks
+that can be combined to create an admin profile.
+#+BEGIN_SRC lisp
+  (let* ((secret (cp:gen-random 16))
+         (profiler (cp:make-encrypted-user-profiler secret 10))
+         ;; Bogus email address so that the second block starts
+         ;; with "admin": "admin&uid=10&rol"
+         (admin (funcall profiler "aaaaaaaaaaadmin"))
+         ;; Use a valid thirteen character email address so that
+         ;; the second block ends with "role="
+         (profile (funcall profiler "attak@jdtw.us")))
+    ;; Now take the second block from the admin ciphertext and
+    ;; replace the third block of the profile ciphertext, so
+    ;; that we end up with "role=admin"
+    (loop for i below 16 do
+      (setf (aref profile (+ i 32)) (aref admin (+ i 16))))
+    (cp:decrypt-and-parse-profile secret profile))
+#+END_SRC
+
+#+RESULTS:
+: (("email" . "attak@jdtw.us") ("uid" . "11") ("role" . "admin") ("uid" . "10")
+:  ("rol" . ""))
+
+Verify that our parser thinks the profile is an admin.
+#+BEGIN_SRC lisp
+  (cp:profile-role '(("email" . "attak@jdtw.us")
+                     ("uid" . "11")
+                     ("role" . "admin")
+                     ("uid" . "10")
+                     ("rol" . "")))
+#+END_SRC
+
+#+RESULTS:
+: "admin"
