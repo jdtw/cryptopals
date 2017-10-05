@@ -51,6 +51,8 @@
            #:encryption-oracle
            #:with-oracle
            #:break-aes-ecb-with-oracle
+           #:find-prefix-length
+           #:break-aes-ecb-with-prefix-oracle
            #:parse-cookie
            #:make-cookie
            #:profile-role

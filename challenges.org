@@ -509,3 +509,36 @@ Verify that our parser thinks the profile is an admin.
 
 #+RESULTS:
 : "admin"
+** Byte-at-a-time ECB decryption (Harder)
+I modified my original oracle code and added "prefix" versions. The first task
+is to find the length of the random prefix, which is what ~FIND-PREFIX-LENGTH~
+does.
+#+BEGIN_SRC lisp
+  (loop for i below 256 do
+    (cp:with-oracle (oracle nil (gen-random i))
+      (let ((len (cp:find-prefix-length #'oracle)))
+        (assert (= i len)))))
+#+END_SRC
+
+#+RESULTS:
+: NIL
+
+And once the prefix-length is known, it's just a matter of updating offsets
+appropriately. Here we are decrypting the text, using a prefix of a random
+length:
+#+BEGIN_SRC lisp
+  (let ((unknown (cp:base64->bytes "Um9sbGluJyBpbiBteSA1L
+  jAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvd
+  wpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNhe
+  SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"))
+        (prefix (cp:gen-random (random 255))))
+    (cp:with-oracle (oracle unknown prefix)
+      (cp:bytes->ascii (cp:break-aes-ecb-with-prefix-oracle #'oracle))))
+#+END_SRC
+
+#+RESULTS:
+: "Rollin' in my 5.0
+: With my rag-top down so my hair can blow
+: The girlies on standby waving just to say hi
+: Did you stop? No, I just drove by
+: "
