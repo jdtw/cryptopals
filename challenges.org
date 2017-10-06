@@ -543,3 +543,36 @@ length:
 : The girlies on standby waving just to say hi
 : Did you stop? No, I just drove by
 : "
+** PKCS#7 padding validation
+#+BEGIN_SRC lisp
+  (cp:bytes->ascii
+   (cp:unpad-pkcs7
+    (concatenate '(vector (unsigned-byte 8) *)
+                 (cp:ascii->bytes "ICE ICE BABY")
+                 #(4 4 4 4))))
+#+END_SRC
+
+#+RESULTS:
+: "ICE ICE BABY"
+#+BEGIN_SRC lisp
+  (handler-case
+      (cp:unpad-pkcs7
+       (concatenate '(vector (unsigned-byte 8) *)
+                    (cp:ascii->bytes "ICE ICE BABY")
+                    #(5 5 5 5)))
+    (cp:invalid-padding-error () :invalid-padding))
+#+END_SRC
+
+#+RESULTS:
+: :INVALID-PADDING
+#+BEGIN_SRC lisp
+  (handler-case
+      (cp:unpad-pkcs7
+       (concatenate '(vector (unsigned-byte 8) *)
+                    (cp:ascii->bytes "ICE ICE BABY")
+                    #(1 2 3 4)))
+    (cp:invalid-padding-error () :invalid-padding))
+#+END_SRC
+
+#+RESULTS:
+: :INVALID-PADDING

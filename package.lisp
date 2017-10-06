@@ -45,6 +45,7 @@
            #:decrypt-aes-128-ecb
            #:detect-aes-128-ecb
            #:pad-pkcs7
+           #:invalid-padding-error
            #:unpad-pkcs7
            #:encrypt-aes-128-cbc
            #:decrypt-aes-128-cbc
