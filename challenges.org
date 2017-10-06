@@ -412,7 +412,7 @@ we correctly detected the ECB encryptions.
 #+END_SRC
 
 #+RESULTS:
-: ((NIL) (T . 3) (T . 3) (T . 3) (T . 3) (NIL) (T . 3) (T . 3) (NIL) (T . 3))
+: ((NIL) (T . 3) (T . 3) (NIL) (T . 3) (T . 3) (T . 3) (NIL) (NIL) (NIL))
 : T
 ** Byte-at-a-time ECB decryption (Simple)
 *** Detect the block size
@@ -485,12 +485,13 @@ that can be combined to create an admin profile.
          (admin (funcall profiler "aaaaaaaaaaadmin"))
          ;; Use a valid thirteen character email address so that
          ;; the second block ends with "role="
-         (profile (funcall profiler "attak@jdtw.us")))
-    ;; Now take the second block from the admin ciphertext and
-    ;; replace the third block of the profile ciphertext, so
-    ;; that we end up with "role=admin"
-    (loop for i below 16 do
-      (setf (aref profile (+ i 32)) (aref admin (+ i 16))))
+         (profile (funcall profiler "attak@jdtw.us"))
+         ;; We need a third block to cut-paste from to get the
+         ;; right pkcs7 padding
+         (padding (funcall profiler "aaaaaaaaa")))
+    ;; Now mix and match...
+    (setf (nth-block 2 profile) (nth-block 1 admin)
+          profile (concat-bytes profile (nth-block 2 padding)))
     (cp:decrypt-and-parse-profile secret profile))
 #+END_SRC
 
