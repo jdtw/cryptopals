@@ -61,4 +61,8 @@
            #:profile-for
            #:make-encrypted-user-profiler
            #:decrypt-and-parse-profile
-           #:profile-role))
+           #:profile-role
+           #:encrypt-user-data
+           #:decrypt-and-parse-data
+           #:data-lookup
+           #:cbc-flip))

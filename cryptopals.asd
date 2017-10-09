@@ -18,4 +18,5 @@
                (:file "bcrypt")
                (:file "aes")
                (:file "cookie")
+               (:file "cbc-bitflipping")
                (:file "cryptopals")))

@@ -576,3 +576,22 @@ length:
 
 #+RESULTS:
 : :INVALID-PADDING
+** CBC bitflipping attacks
+The intuition here is that the prior ciphertext block gets XOR'd with the output
+of the AES s-box. That means, to get the required character, we need to XOR the
+right ciphertext byte with the known-plaintext byte and the desired byte. That
+is what the function ~CBC-FLIP~ does in the code below.
+#+BEGIN_SRC lisp
+  (let* ((secret (cp:gen-random 16))
+         (iv (cp:gen-random 16))
+         (user-data "aaaaaaaaaaaaaaaaaaaaaaadminatrue")
+         (encrypted (cp:encrypt-user-data secret iv user-data)))
+    ;; Flip the 'a' before "admin" to ';' and the 'a' before
+    ;; "true" to '='. Hard code the indices, because I'm lazy.
+    (cp:cbc-flip encrypted 37 #\a #\;)
+    (cp:cbc-flip encrypted 43 #\a #\=)
+    (cp:data-lookup "admin" (cp:decrypt-and-parse-data secret iv encrypted)))
+#+END_SRC
+
+#+RESULTS:
+: "true"
