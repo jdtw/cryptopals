@@ -188,9 +188,10 @@ Play that funky music
 ** AES in ECB mode
 #+BEGIN_SRC lisp
   (cp:bytes->ascii
-   (cp:decrypt-aes-128-ecb
-    (cp:ascii->bytes "YELLOW SUBMARINE")
-    (cp:read-base64-file "7.txt")))
+   (cp:unpad-pkcs7
+    (cp:decrypt-aes-128-ecb
+     (cp:ascii->bytes "YELLOW SUBMARINE")
+     (cp:read-base64-file "7.txt"))))
 #+END_SRC
 
 #+RESULTS:
@@ -274,7 +275,7 @@ Play that funky music white boy you say it, say it
 Play that funky music A little louder now
 Play that funky music, white boy Come on, Come on, Come on
 Play that funky music
-"
+"
 #+end_example
 ** Detect AES in ECB mode
 To detect collisions, ~DETECT-AES-128-ECB~ breaks each line up into blocks
