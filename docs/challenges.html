@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-24 Thu 23:18 -->
+<!-- 2017-10-08 Sun 21:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Cryptopals Challenges</title>
@@ -67,6 +67,7 @@
   pre.src-fortran:before { content: 'Fortran'; }
   pre.src-gnuplot:before { content: 'gnuplot'; }
   pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
   pre.src-java:before { content: 'Java'; }
   pre.src-js:before { content: 'Javascript'; }
   pre.src-latex:before { content: 'LaTeX'; }
@@ -232,44 +233,55 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgb9a86bf">1. Set 1</a>
+<li><a href="#orge6dfbaa">1. Set 1</a>
 <ul>
-<li><a href="#orgd0d6e02">1.1. Convert hex to base64</a></li>
-<li><a href="#org7aff14c">1.2. Fixed XOR</a></li>
-<li><a href="#orgf1d46f1">1.3. Single-byte XOR cipher</a></li>
-<li><a href="#org49aee03">1.4. Detect single-character XOR</a></li>
-<li><a href="#org8f2ed62">1.5. Implement repeating-key XOR</a></li>
-<li><a href="#orge9370e0">1.6. Break repeating-key XOR</a></li>
-<li><a href="#org483c507">1.7. AES in ECB mode</a></li>
-<li><a href="#org4ffc24d">1.8. Detect AES in ECB mode</a></li>
+<li><a href="#org77784a9">1.1. Convert hex to base64</a></li>
+<li><a href="#org04a5a9f">1.2. Fixed XOR</a></li>
+<li><a href="#orgd99da0c">1.3. Single-byte XOR cipher</a></li>
+<li><a href="#org3297eeb">1.4. Detect single-character XOR</a></li>
+<li><a href="#orgff0c82f">1.5. Implement repeating-key XOR</a></li>
+<li><a href="#org7a6c18a">1.6. Break repeating-key XOR</a></li>
+<li><a href="#org4788a75">1.7. AES in ECB mode</a></li>
+<li><a href="#orge4652ee">1.8. Detect AES in ECB mode</a></li>
 </ul>
 </li>
-<li><a href="#org49c7e6a">2. Set 2</a>
+<li><a href="#orgc619bbd">2. Set 2</a>
 <ul>
-<li><a href="#orga49526d">2.1. Implement PKCS#7 padding</a></li>
-<li><a href="#org768c99e">2.2. Implement CBC mode</a></li>
-<li><a href="#org2abbfcf">2.3. An ECB/CBC detection oracle</a></li>
-<li><a href="#org991d48d">2.4. Byte-at-a-time ECB decryption (Simple)</a>
+<li><a href="#org6e3007a">2.1. Implement PKCS#7 padding</a></li>
+<li><a href="#orge136f59">2.2. Implement CBC mode</a></li>
+<li><a href="#org431d7ec">2.3. An ECB/CBC detection oracle</a></li>
+<li><a href="#org1bac13e">2.4. Byte-at-a-time ECB decryption (Simple)</a>
 <ul>
-<li><a href="#org11fcea1">2.4.1. Detect the block size</a></li>
-<li><a href="#orgf6377d3">2.4.2. Detect that the function is using ECB</a></li>
-<li><a href="#orgfc0155f">2.4.3. Use oracle to break ECB</a></li>
+<li><a href="#org09e8149">2.4.1. Detect the block size</a></li>
+<li><a href="#org0691999">2.4.2. Detect that the function is using ECB</a></li>
+<li><a href="#orgfb5e8fa">2.4.3. Use oracle to break ECB</a></li>
 </ul>
 </li>
+<li><a href="#org172a72c">2.5. ECB cut-and-paste</a>
+<ul>
+<li><a href="#orgdf41f19">2.5.1. Write a k=v parsing routine</a></li>
+<li><a href="#orgbdcaa7d">2.5.2. Write a function that encodes a user profile</a></li>
+<li><a href="#org1e2aab1">2.5.3. Carry out a cut-paste attack</a></li>
+</ul>
+</li>
+<li><a href="#orgfc75e3c">2.6. Byte-at-a-time ECB decryption (Harder)</a></li>
+<li><a href="#orgc8381b7">2.7. PKCS#7 padding validation</a></li>
+<li><a href="#org1abe578">2.8. CBC bitflipping attacks</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgb9a86bf" class="outline-2">
-<h2 id="orgb9a86bf"><span class="section-number-2">1</span> Set 1</h2>
+<div id="outline-container-orge6dfbaa" class="outline-2">
+<h2 id="orge6dfbaa"><span class="section-number-2">1</span> Set 1</h2>
 <div class="outline-text-2" id="text-1">
-</div><div id="outline-container-orgd0d6e02" class="outline-3">
-<h3 id="orgd0d6e02"><span class="section-number-3">1.1</span> Convert hex to base64</h3>
+</div>
+<div id="outline-container-org77784a9" class="outline-3">
+<h3 id="org77784a9"><span class="section-number-3">1.1</span> Convert hex to base64</h3>
 <div class="outline-text-3" id="text-1-1">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;base64 <span style="color: #bc6ec5;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:bytes-&gt;base64 <span style="color: #6c3163;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -279,14 +291,14 @@ for the JavaScript code in this tag.
 </pre>
 </div>
 </div>
-<div id="outline-container-org7aff14c" class="outline-3">
-<h3 id="org7aff14c"><span class="section-number-3">1.2</span> Fixed XOR</h3>
+<div id="outline-container-org04a5a9f" class="outline-3">
+<h3 id="org04a5a9f"><span class="section-number-3">1.2</span> Fixed XOR</h3>
 <div class="outline-text-3" id="text-1-2">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;hex
- <span style="color: #bc6ec5;">(</span>cp:fixed-xor
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:bytes-&gt;hex
+ <span style="color: #6c3163;">(</span>cp:fixed-xor
   <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"1c0111001f010100061a024b53535009181c"</span><span style="color: #2d9574;">)</span>
-  <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"686974207468652062756c6c277320657965"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"686974207468652062756c6c277320657965"</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -296,13 +308,13 @@ for the JavaScript code in this tag.
 </pre>
 </div>
 </div>
-<div id="outline-container-orgf1d46f1" class="outline-3">
-<h3 id="orgf1d46f1"><span class="section-number-3">1.3</span> Single-byte XOR cipher</h3>
+<div id="outline-container-orgd99da0c" class="outline-3">
+<h3 id="orgd99da0c"><span class="section-number-3">1.3</span> Single-byte XOR cipher</h3>
 <div class="outline-text-3" id="text-1-3">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>car
- <span style="color: #bc6ec5;">(</span>cp:break-single-byte-xor
-  <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>car
+ <span style="color: #6c3163;">(</span>cp:break-single-byte-xor
+  <span style="color: #2d9574;">(</span>cp:hex-&gt;bytes <span style="color: #2d9574;">"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -336,17 +348,17 @@ frequency below).
 </div>
 </div>
 
-<div id="outline-container-org49aee03" class="outline-3">
-<h3 id="org49aee03"><span class="section-number-3">1.4</span> Detect single-character XOR</h3>
+<div id="outline-container-org3297eeb" class="outline-3">
+<h3 id="org3297eeb"><span class="section-number-3">1.4</span> Detect single-character XOR</h3>
 <div class="outline-text-3" id="text-1-4">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">flet</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>top-score <span style="color: #67b11d;">(</span>hex<span style="color: #67b11d;">)</span>
-         <span style="color: #67b11d;">(</span>first <span style="color: #b1951d;">(</span>cp:break-single-byte-xor <span style="color: #4f97d7;">(</span>cp:hex-&gt;bytes hex<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
-  <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #2d9574;">(</span><span style="color: #67b11d;">(</span>scores <span style="color: #b1951d;">(</span><span style="color: #4f97d7; font-weight: bold;">with-open-file</span> <span style="color: #4f97d7;">(</span>in <span style="color: #2d9574;">"4.txt"</span><span style="color: #4f97d7;">)</span>
-                  <span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> for l = <span style="color: #bc6ec5;">(</span>read-line in nil<span style="color: #bc6ec5;">)</span>
-                        while l collect <span style="color: #bc6ec5;">(</span>nconc <span style="color: #2d9574;">(</span>list <span style="color: #4f97d7;">:line</span> l<span style="color: #2d9574;">)</span>
-                                               <span style="color: #2d9574;">(</span>top-score l<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
-    <span style="color: #2d9574;">(</span>car <span style="color: #67b11d;">(</span>sort scores #'&lt; <span style="color: #4f97d7;">:key</span> <span style="color: #b1951d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #4f97d7;">(</span>x<span style="color: #4f97d7;">)</span> <span style="color: #4f97d7;">(</span>getf x <span style="color: #4f97d7;">:score</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">flet</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>top-score <span style="color: #67b11d;">(</span>hex<span style="color: #67b11d;">)</span>
+         <span style="color: #67b11d;">(</span>first <span style="color: #b1951d;">(</span>cp:break-single-byte-xor <span style="color: #3a81c3;">(</span>cp:hex-&gt;bytes hex<span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span><span style="color: #3a81c3; font-weight: bold;">let</span> <span style="color: #2d9574;">(</span><span style="color: #67b11d;">(</span>scores <span style="color: #b1951d;">(</span><span style="color: #3a81c3; font-weight: bold;">with-open-file</span> <span style="color: #3a81c3;">(</span>in <span style="color: #2d9574;">"4.txt"</span><span style="color: #3a81c3;">)</span>
+                  <span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">loop</span> for l = <span style="color: #6c3163;">(</span>read-line in nil<span style="color: #6c3163;">)</span>
+                        while l collect <span style="color: #6c3163;">(</span>nconc <span style="color: #2d9574;">(</span>list <span style="color: #3a81c3;">:line</span> l<span style="color: #2d9574;">)</span>
+                                               <span style="color: #2d9574;">(</span>top-score l<span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+    <span style="color: #2d9574;">(</span>car <span style="color: #67b11d;">(</span>sort scores #'&lt; <span style="color: #3a81c3;">:key</span> <span style="color: #b1951d;">(</span><span style="color: #3a81c3; font-weight: bold;">lambda</span> <span style="color: #3a81c3;">(</span>x<span style="color: #3a81c3;">)</span> <span style="color: #3a81c3;">(</span>getf x <span style="color: #3a81c3;">:score</span><span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -358,14 +370,14 @@ frequency below).
 </pre>
 </div>
 </div>
-<div id="outline-container-org8f2ed62" class="outline-3">
-<h3 id="org8f2ed62"><span class="section-number-3">1.5</span> Implement repeating-key XOR</h3>
+<div id="outline-container-orgff0c82f" class="outline-3">
+<h3 id="orgff0c82f"><span class="section-number-3">1.5</span> Implement repeating-key XOR</h3>
 <div class="outline-text-3" id="text-1-5">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;hex
- <span style="color: #bc6ec5;">(</span>cp:repeating-xor <span style="color: #2d9574;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"ICE"</span><span style="color: #2d9574;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:bytes-&gt;hex
+ <span style="color: #6c3163;">(</span>cp:repeating-xor <span style="color: #2d9574;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"ICE"</span><span style="color: #2d9574;">)</span>
                    <span style="color: #2d9574;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"Burning 'em, if you ain't quick and nimble</span>
-<span style="color: #2d9574;">I go crazy when I hear a cymbal"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<span style="color: #2d9574;">I go crazy when I hear a cymbal"</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -375,15 +387,15 @@ frequency below).
 </pre>
 </div>
 </div>
-<div id="outline-container-orge9370e0" class="outline-3">
-<h3 id="orge9370e0"><span class="section-number-3">1.6</span> Break repeating-key XOR</h3>
+<div id="outline-container-org7a6c18a" class="outline-3">
+<h3 id="org7a6c18a"><span class="section-number-3">1.6</span> Break repeating-key XOR</h3>
 <div class="outline-text-3" id="text-1-6">
 <p>
 Test our hamming distance calculation:
 </p>
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:hamming-distance <span style="color: #bc6ec5;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"this is a test"</span><span style="color: #bc6ec5;">)</span>
-                     <span style="color: #bc6ec5;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"wokka wokka!!!"</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:hamming-distance <span style="color: #6c3163;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"this is a test"</span><span style="color: #6c3163;">)</span>
+                     <span style="color: #6c3163;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"wokka wokka!!!"</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -398,9 +410,9 @@ output, it converges on a key size of 29 bytes, which is what we'll use to try
 and break the cipher.
 </p>
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> with bytes = <span style="color: #bc6ec5;">(</span>cp:read-base64-file <span style="color: #2d9574;">"6.txt"</span><span style="color: #bc6ec5;">)</span>
-      for i from <span style="color: #a45bad;">1</span> to <span style="color: #a45bad;">20</span>
-      collect <span style="color: #bc6ec5;">(</span>cp:find-xor-keysize bytes <span style="color: #4f97d7;">:block-count</span> i<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">loop</span> with bytes = <span style="color: #6c3163;">(</span>cp:read-base64-file <span style="color: #2d9574;">"6.txt"</span><span style="color: #6c3163;">)</span>
+      for i from <span style="color: #4e3163;">1</span> to <span style="color: #4e3163;">20</span>
+      collect <span style="color: #6c3163;">(</span>cp:find-xor-keysize bytes <span style="color: #3a81c3;">:block-count</span> i<span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -412,11 +424,11 @@ and break the cipher.
 And now try to actually break repeating XOR.
 </p>
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>bytes <span style="color: #67b11d;">(</span>cp:read-base64-file <span style="color: #2d9574;">"6.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
-  <span style="color: #bc6ec5;">(</span>cp:bytes-&gt;ascii
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>bytes <span style="color: #67b11d;">(</span>cp:read-base64-file <span style="color: #2d9574;">"6.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>cp:bytes-&gt;ascii
    <span style="color: #2d9574;">(</span>cp:break-repeating-xor
     <span style="color: #67b11d;">(</span>cp:find-xor-keysize bytes<span style="color: #67b11d;">)</span>
-    bytes<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+    bytes<span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -504,14 +516,14 @@ Play that funky music
 </pre>
 </div>
 </div>
-<div id="outline-container-org483c507" class="outline-3">
-<h3 id="org483c507"><span class="section-number-3">1.7</span> AES in ECB mode</h3>
+<div id="outline-container-org4788a75" class="outline-3">
+<h3 id="org4788a75"><span class="section-number-3">1.7</span> AES in ECB mode</h3>
 <div class="outline-text-3" id="text-1-7">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;ascii
- <span style="color: #bc6ec5;">(</span>cp:decrypt-aes-128-ecb
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:bytes-&gt;ascii
+ <span style="color: #6c3163;">(</span>cp:decrypt-aes-128-ecb
   <span style="color: #2d9574;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"YELLOW SUBMARINE"</span><span style="color: #2d9574;">)</span>
-  <span style="color: #2d9574;">(</span>cp:read-base64-file <span style="color: #2d9574;">"7.txt"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  <span style="color: #2d9574;">(</span>cp:read-base64-file <span style="color: #2d9574;">"7.txt"</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -599,8 +611,8 @@ Play that funky music
 </pre>
 </div>
 </div>
-<div id="outline-container-org4ffc24d" class="outline-3">
-<h3 id="org4ffc24d"><span class="section-number-3">1.8</span> Detect AES in ECB mode</h3>
+<div id="outline-container-orge4652ee" class="outline-3">
+<h3 id="orge4652ee"><span class="section-number-3">1.8</span> Detect AES in ECB mode</h3>
 <div class="outline-text-3" id="text-1-8">
 <p>
 To detect collisions, <code>DETECT-AES-128-ECB</code> breaks each line up into blocks
@@ -609,12 +621,12 @@ It returns the number of equal blocks if ECB is detected, or <code>NIL</code>
 otherwise.
 </p>
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>lines <span style="color: #67b11d;">(</span>cp:read-hex-line-file <span style="color: #2d9574;">"8.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
-  <span style="color: #bc6ec5;">(</span>remove-if #'null <span style="color: #2d9574;">(</span>mapcar <span style="color: #67b11d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #b1951d;">(</span>line<span style="color: #b1951d;">)</span>
-                              <span style="color: #b1951d;">(</span>cons <span style="color: #4f97d7;">(</span>cp:detect-aes-128-ecb line<span style="color: #4f97d7;">)</span>
-                                    <span style="color: #4f97d7;">(</span>cp:bytes-&gt;hex line<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>lines <span style="color: #67b11d;">(</span>cp:read-hex-line-file <span style="color: #2d9574;">"8.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>remove-if #'null <span style="color: #2d9574;">(</span>mapcar <span style="color: #67b11d;">(</span><span style="color: #3a81c3; font-weight: bold;">lambda</span> <span style="color: #b1951d;">(</span>line<span style="color: #b1951d;">)</span>
+                              <span style="color: #b1951d;">(</span>cons <span style="color: #3a81c3;">(</span>cp:detect-aes-128-ecb line<span style="color: #3a81c3;">)</span>
+                                    <span style="color: #3a81c3;">(</span>cp:bytes-&gt;hex line<span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>
                             lines<span style="color: #2d9574;">)</span>
-             <span style="color: #4f97d7;">:key</span> #'car<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+             <span style="color: #3a81c3;">:key</span> #'car<span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -626,14 +638,15 @@ otherwise.
 </div>
 </div>
 </div>
-<div id="outline-container-org49c7e6a" class="outline-2">
-<h2 id="org49c7e6a"><span class="section-number-2">2</span> Set 2</h2>
+<div id="outline-container-orgc619bbd" class="outline-2">
+<h2 id="orgc619bbd"><span class="section-number-2">2</span> Set 2</h2>
 <div class="outline-text-2" id="text-2">
-</div><div id="outline-container-orga49526d" class="outline-3">
-<h3 id="orga49526d"><span class="section-number-3">2.1</span> Implement PKCS#7 padding</h3>
+</div>
+<div id="outline-container-org6e3007a" class="outline-3">
+<h3 id="org6e3007a"><span class="section-number-3">2.1</span> Implement PKCS#7 padding</h3>
 <div class="outline-text-3" id="text-2-1">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:pad-pkcs7 <span style="color: #bc6ec5;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"YELLOW SUBMARINE"</span><span style="color: #bc6ec5;">)</span> <span style="color: #4f97d7;">:block-size</span> <span style="color: #a45bad;">20</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:pad-pkcs7 <span style="color: #6c3163;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"YELLOW SUBMARINE"</span><span style="color: #6c3163;">)</span> <span style="color: #3a81c3;">:block-size</span> <span style="color: #4e3163;">20</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -643,16 +656,16 @@ otherwise.
 </pre>
 </div>
 </div>
-<div id="outline-container-org768c99e" class="outline-3">
-<h3 id="org768c99e"><span class="section-number-3">2.2</span> Implement CBC mode</h3>
+<div id="outline-container-orge136f59" class="outline-3">
+<h3 id="orge136f59"><span class="section-number-3">2.2</span> Implement CBC mode</h3>
 <div class="outline-text-3" id="text-2-2">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span>cp:bytes-&gt;ascii
- <span style="color: #bc6ec5;">(</span>cp:unpad-pkcs7
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:bytes-&gt;ascii
+ <span style="color: #6c3163;">(</span>cp:unpad-pkcs7
   <span style="color: #2d9574;">(</span>cp:decrypt-aes-128-cbc
    <span style="color: #67b11d;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"YELLOW SUBMARINE"</span><span style="color: #67b11d;">)</span>
-   <span style="color: #67b11d;">(</span>make-array <span style="color: #a45bad;">16</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #a45bad;">0</span><span style="color: #67b11d;">)</span>
-   <span style="color: #67b11d;">(</span>cp:read-base64-file <span style="color: #2d9574;">"10.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+   <span style="color: #67b11d;">(</span>make-array <span style="color: #4e3163;">16</span> <span style="color: #3a81c3;">:initial-element</span> <span style="color: #4e3163;">0</span><span style="color: #67b11d;">)</span>
+   <span style="color: #67b11d;">(</span>cp:read-base64-file <span style="color: #2d9574;">"10.txt"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -740,8 +753,8 @@ Play that funky music
 </pre>
 </div>
 </div>
-<div id="outline-container-org2abbfcf" class="outline-3">
-<h3 id="org2abbfcf"><span class="section-number-3">2.3</span> An ECB/CBC detection oracle</h3>
+<div id="outline-container-org431d7ec" class="outline-3">
+<h3 id="org431d7ec"><span class="section-number-3">2.3</span> An ECB/CBC detection oracle</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 Run <code>ENCRYPTION-ORACLE</code> ten times, and collect the results. My oracle
@@ -750,15 +763,15 @@ returns multiple values &#x2013; the encrypted output, and <code>T</code> for EC
 we correctly detected the ECB encryptions.
 </p>
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let*</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>input <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* <span style="color: #a45bad;">16</span> <span style="color: #a45bad;">4</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #b1951d;">(</span>char-code #\A<span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
-       <span style="color: #2d9574;">(</span>runs <span style="color: #67b11d;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> repeat <span style="color: #a45bad;">10</span>
-                   collect <span style="color: #b1951d;">(</span>multiple-value-list <span style="color: #4f97d7;">(</span>cp:encryption-oracle input<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
-       <span style="color: #2d9574;">(</span>results <span style="color: #67b11d;">(</span>mapcar <span style="color: #b1951d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #4f97d7;">(</span>r<span style="color: #4f97d7;">)</span> <span style="color: #4f97d7;">(</span>cons <span style="color: #bc6ec5;">(</span>second r<span style="color: #bc6ec5;">)</span>
-                                          <span style="color: #bc6ec5;">(</span>cp:detect-aes-128-ecb <span style="color: #2d9574;">(</span>first r<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span>
-                        runs<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
-  <span style="color: #bc6ec5;">(</span>values results <span style="color: #2d9574;">(</span>every <span style="color: #67b11d;">(</span><span style="color: #4f97d7; font-weight: bold;">lambda</span> <span style="color: #b1951d;">(</span>r<span style="color: #b1951d;">)</span> <span style="color: #b1951d;">(</span>or <span style="color: #4f97d7;">(</span>and <span style="color: #bc6ec5;">(</span>car r<span style="color: #bc6ec5;">)</span> <span style="color: #bc6ec5;">(</span>cdr r<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
-                                         <span style="color: #4f97d7;">(</span>not <span style="color: #bc6ec5;">(</span>or <span style="color: #2d9574;">(</span>car r<span style="color: #2d9574;">)</span> <span style="color: #2d9574;">(</span>cdr r<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>
-                         results<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let*</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>input <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* <span style="color: #4e3163;">16</span> <span style="color: #4e3163;">4</span><span style="color: #b1951d;">)</span> <span style="color: #3a81c3;">:initial-element</span> <span style="color: #b1951d;">(</span>char-code #\A<span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>runs <span style="color: #67b11d;">(</span><span style="color: #3a81c3; font-weight: bold;">loop</span> repeat <span style="color: #4e3163;">10</span>
+                   collect <span style="color: #b1951d;">(</span>multiple-value-list <span style="color: #3a81c3;">(</span>cp:encryption-oracle input<span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>results <span style="color: #67b11d;">(</span>mapcar <span style="color: #b1951d;">(</span><span style="color: #3a81c3; font-weight: bold;">lambda</span> <span style="color: #3a81c3;">(</span>r<span style="color: #3a81c3;">)</span> <span style="color: #3a81c3;">(</span>cons <span style="color: #6c3163;">(</span>second r<span style="color: #6c3163;">)</span>
+                                          <span style="color: #6c3163;">(</span>cp:detect-aes-128-ecb <span style="color: #2d9574;">(</span>first r<span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span>
+                        runs<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>values results <span style="color: #2d9574;">(</span>every <span style="color: #67b11d;">(</span><span style="color: #3a81c3; font-weight: bold;">lambda</span> <span style="color: #b1951d;">(</span>r<span style="color: #b1951d;">)</span> <span style="color: #b1951d;">(</span>or <span style="color: #3a81c3;">(</span>and <span style="color: #6c3163;">(</span>car r<span style="color: #6c3163;">)</span> <span style="color: #6c3163;">(</span>cdr r<span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+                                         <span style="color: #3a81c3;">(</span>not <span style="color: #6c3163;">(</span>or <span style="color: #2d9574;">(</span>car r<span style="color: #2d9574;">)</span> <span style="color: #2d9574;">(</span>cdr r<span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>
+                         results<span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -769,19 +782,20 @@ T
 </pre>
 </div>
 </div>
-<div id="outline-container-org991d48d" class="outline-3">
-<h3 id="org991d48d"><span class="section-number-3">2.4</span> Byte-at-a-time ECB decryption (Simple)</h3>
+<div id="outline-container-org1bac13e" class="outline-3">
+<h3 id="org1bac13e"><span class="section-number-3">2.4</span> Byte-at-a-time ECB decryption (Simple)</h3>
 <div class="outline-text-3" id="text-2-4">
-</div><div id="outline-container-org11fcea1" class="outline-4">
-<h4 id="org11fcea1"><span class="section-number-4">2.4.1</span> Detect the block size</h4>
+</div>
+<div id="outline-container-org09e8149" class="outline-4">
+<h4 id="org09e8149"><span class="section-number-4">2.4.1</span> Detect the block size</h4>
 <div class="outline-text-4" id="text-2-4-1">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">cp:with-oracle</span> <span style="color: #bc6ec5;">(</span>oracle<span style="color: #bc6ec5;">)</span>
-  <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">loop</span> for i from <span style="color: #a45bad;">1</span> to <span style="color: #a45bad;">64</span>
-        for encrypted = <span style="color: #2d9574;">(</span>oracle <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* i <span style="color: #a45bad;">2</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #a45bad;">97</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
-        for blocks = <span style="color: #2d9574;">(</span>cp:blockify encrypted <span style="color: #4f97d7;">:block-size</span> i<span style="color: #2d9574;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">cp:with-oracle</span> <span style="color: #6c3163;">(</span>oracle<span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span><span style="color: #3a81c3; font-weight: bold;">loop</span> for i from <span style="color: #4e3163;">1</span> to <span style="color: #4e3163;">64</span>
+        for encrypted = <span style="color: #2d9574;">(</span>oracle <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* i <span style="color: #4e3163;">2</span><span style="color: #b1951d;">)</span> <span style="color: #3a81c3;">:initial-element</span> <span style="color: #4e3163;">97</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+        for blocks = <span style="color: #2d9574;">(</span>cp:blockify encrypted <span style="color: #3a81c3;">:block-size</span> i<span style="color: #2d9574;">)</span>
         until <span style="color: #2d9574;">(</span>equalp <span style="color: #67b11d;">(</span>first blocks<span style="color: #67b11d;">)</span> <span style="color: #67b11d;">(</span>second blocks<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
-        finally <span style="color: #2d9574;">(</span><span style="color: #4f97d7; font-weight: bold;">return</span> i<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+        finally <span style="color: #2d9574;">(</span><span style="color: #3a81c3; font-weight: bold;">return</span> i<span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -791,13 +805,13 @@ T
 </pre>
 </div>
 </div>
-<div id="outline-container-orgf6377d3" class="outline-4">
-<h4 id="orgf6377d3"><span class="section-number-4">2.4.2</span> Detect that the function is using ECB</h4>
+<div id="outline-container-org0691999" class="outline-4">
+<h4 id="org0691999"><span class="section-number-4">2.4.2</span> Detect that the function is using ECB</h4>
 <div class="outline-text-4" id="text-2-4-2">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">cp:with-oracle</span> <span style="color: #bc6ec5;">(</span>oracle<span style="color: #bc6ec5;">)</span>
-  <span style="color: #bc6ec5;">(</span>cp:detect-aes-128-ecb
-   <span style="color: #2d9574;">(</span>oracle <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* <span style="color: #a45bad;">16</span> <span style="color: #a45bad;">2</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7;">:initial-element</span> <span style="color: #a45bad;">97</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">cp:with-oracle</span> <span style="color: #6c3163;">(</span>oracle<span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>cp:detect-aes-128-ecb
+   <span style="color: #2d9574;">(</span>oracle <span style="color: #67b11d;">(</span>make-array <span style="color: #b1951d;">(</span>* <span style="color: #4e3163;">16</span> <span style="color: #4e3163;">2</span><span style="color: #b1951d;">)</span> <span style="color: #3a81c3;">:initial-element</span> <span style="color: #4e3163;">97</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -807,16 +821,16 @@ T
 </pre>
 </div>
 </div>
-<div id="outline-container-orgfc0155f" class="outline-4">
-<h4 id="orgfc0155f"><span class="section-number-4">2.4.3</span> Use oracle to break ECB</h4>
+<div id="outline-container-orgfb5e8fa" class="outline-4">
+<h4 id="orgfb5e8fa"><span class="section-number-4">2.4.3</span> Use oracle to break ECB</h4>
 <div class="outline-text-4" id="text-2-4-3">
 <div class="org-src-container">
-<pre class="src src-lisp"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">let</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span>unknown <span style="color: #67b11d;">(</span>cp:base64-&gt;bytes <span style="color: #2d9574;">"Um9sbGluJyBpbiBteSA1L</span>
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>unknown <span style="color: #67b11d;">(</span>cp:base64-&gt;bytes <span style="color: #2d9574;">"Um9sbGluJyBpbiBteSA1L</span>
 <span style="color: #2d9574;">jAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvd</span>
 <span style="color: #2d9574;">wpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNhe</span>
-<span style="color: #2d9574;">SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
-  <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">cp:with-oracle</span> <span style="color: #2d9574;">(</span>oracle unknown<span style="color: #2d9574;">)</span>
-    <span style="color: #2d9574;">(</span>cp:bytes-&gt;ascii <span style="color: #67b11d;">(</span>cp:break-aes-ecb-with-oracle #'oracle<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<span style="color: #2d9574;">SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span><span style="color: #3a81c3; font-weight: bold;">cp:with-oracle</span> <span style="color: #2d9574;">(</span>oracle unknown<span style="color: #2d9574;">)</span>
+    <span style="color: #2d9574;">(</span>cp:bytes-&gt;ascii <span style="color: #67b11d;">(</span>cp:break-aes-ecb-with-oracle #'oracle<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
 </pre>
 </div>
 
@@ -831,10 +845,221 @@ Did you stop? No, I just drove by
 </div>
 </div>
 </div>
+<div id="outline-container-org172a72c" class="outline-3">
+<h3 id="org172a72c"><span class="section-number-3">2.5</span> ECB cut-and-paste</h3>
+<div class="outline-text-3" id="text-2-5">
+</div>
+<div id="outline-container-orgdf41f19" class="outline-4">
+<h4 id="orgdf41f19"><span class="section-number-4">2.5.1</span> Write a k=v parsing routine</h4>
+<div class="outline-text-4" id="text-2-5-1">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:parse-cookie <span style="color: #2d9574;">"foo=bar&amp;baz=qux&amp;zap=zazzle"</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+(("foo" . "bar") ("baz" . "qux") ("zap" . "zazzle"))
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgbdcaa7d" class="outline-4">
+<h4 id="orgbdcaa7d"><span class="section-number-4">2.5.2</span> Write a function that encodes a user profile</h4>
+<div class="outline-text-4" id="text-2-5-2">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>user-profiler <span style="color: #67b11d;">(</span>cp:make-profiler <span style="color: #2d9574;">"user"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>list <span style="color: #2d9574;">(</span>cp:profile-for user-profiler <span style="color: #2d9574;">"alice"</span><span style="color: #2d9574;">)</span>
+        <span style="color: #2d9574;">(</span>cp:profile-for user-profiler <span style="color: #2d9574;">"bob"</span><span style="color: #2d9574;">)</span>
+        <span style="color: #2d9574;">(</span>cp:profile-for user-profiler <span style="color: #2d9574;">"eve"</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+("email=alice&amp;uid=0&amp;role=user" "email=bob&amp;uid=1&amp;role=user"
+ "email=eve&amp;uid=2&amp;role=user")
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org1e2aab1" class="outline-4">
+<h4 id="org1e2aab1"><span class="section-number-4">2.5.3</span> Carry out a cut-paste attack</h4>
+<div class="outline-text-4" id="text-2-5-3">
+<p>
+<code>MAKE-ENCRYPTED-USER-PROFILER</code> is just an AES ECB wrapper around
+<code>MAKE-PROFILER</code>. Use carefully crafted email addresses to get blocks
+that can be combined to create an admin profile.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let*</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>secret <span style="color: #67b11d;">(</span>cp:gen-random <span style="color: #4e3163;">16</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>profiler <span style="color: #67b11d;">(</span>cp:make-encrypted-user-profiler secret <span style="color: #4e3163;">10</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Bogus email address so that the second block starts</span>
+       <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">with "admin": "admin&amp;uid=10&amp;rol"</span>
+       <span style="color: #2d9574;">(</span>admin <span style="color: #67b11d;">(</span>funcall profiler <span style="color: #2d9574;">"aaaaaaaaaaadmin"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Use a valid thirteen character email address so that</span>
+       <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">the second block ends with "role="</span>
+       <span style="color: #2d9574;">(</span>profile <span style="color: #67b11d;">(</span>funcall profiler <span style="color: #2d9574;">"attak@jdtw.us"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">We need a third block to cut-paste from to get the</span>
+       <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">right pkcs7 padding</span>
+       <span style="color: #2d9574;">(</span>padding <span style="color: #67b11d;">(</span>funcall profiler <span style="color: #2d9574;">"aaaaaaaaa"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Now mix and match...</span>
+  <span style="color: #6c3163;">(</span>setf <span style="color: #2d9574;">(</span>nth-block <span style="color: #4e3163;">2</span> profile<span style="color: #2d9574;">)</span> <span style="color: #2d9574;">(</span>nth-block <span style="color: #4e3163;">1</span> admin<span style="color: #2d9574;">)</span>
+        profile <span style="color: #2d9574;">(</span>concat-bytes profile <span style="color: #67b11d;">(</span>nth-block <span style="color: #4e3163;">2</span> padding<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>cp:decrypt-and-parse-profile secret profile<span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+(("email" . "attak@jdtw.us") ("uid" . "11") ("role" . "admin") ("uid" . "10")
+ ("rol" . ""))
+
+</pre>
+
+<p>
+Verify that our parser thinks the profile is an admin.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:profile-role '<span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span><span style="color: #2d9574;">"email"</span> . <span style="color: #2d9574;">"attak@jdtw.us"</span><span style="color: #2d9574;">)</span>
+                   <span style="color: #2d9574;">(</span><span style="color: #2d9574;">"uid"</span> . <span style="color: #2d9574;">"11"</span><span style="color: #2d9574;">)</span>
+                   <span style="color: #2d9574;">(</span><span style="color: #2d9574;">"role"</span> . <span style="color: #2d9574;">"admin"</span><span style="color: #2d9574;">)</span>
+                   <span style="color: #2d9574;">(</span><span style="color: #2d9574;">"uid"</span> . <span style="color: #2d9574;">"10"</span><span style="color: #2d9574;">)</span>
+                   <span style="color: #2d9574;">(</span><span style="color: #2d9574;">"rol"</span> . <span style="color: #2d9574;">""</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"admin"
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfc75e3c" class="outline-3">
+<h3 id="orgfc75e3c"><span class="section-number-3">2.6</span> Byte-at-a-time ECB decryption (Harder)</h3>
+<div class="outline-text-3" id="text-2-6">
+<p>
+I modified my original oracle code and added "prefix" versions. The first task
+is to find the length of the random prefix, which is what <code>FIND-PREFIX-LENGTH</code>
+does.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">loop</span> for i below <span style="color: #4e3163;">256</span> do
+  <span style="color: #6c3163;">(</span><span style="color: #3a81c3; font-weight: bold;">cp:with-oracle</span> <span style="color: #2d9574;">(</span>oracle nil <span style="color: #67b11d;">(</span>gen-random i<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+    <span style="color: #2d9574;">(</span><span style="color: #3a81c3; font-weight: bold;">let</span> <span style="color: #67b11d;">(</span><span style="color: #b1951d;">(</span>len <span style="color: #3a81c3;">(</span>cp:find-prefix-length #'oracle<span style="color: #3a81c3;">)</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>
+      <span style="color: #67b11d;">(</span><span style="color: #dc752f; background-color: #fbf8ef;">assert</span> <span style="color: #b1951d;">(</span>= i len<span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+NIL
+
+</pre>
+
+<p>
+And once the prefix-length is known, it's just a matter of updating offsets
+appropriately. Here we are decrypting the text, using a prefix of a random
+length:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>unknown <span style="color: #67b11d;">(</span>cp:base64-&gt;bytes <span style="color: #2d9574;">"Um9sbGluJyBpbiBteSA1L</span>
+<span style="color: #2d9574;">jAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvd</span>
+<span style="color: #2d9574;">wpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNhe</span>
+<span style="color: #2d9574;">SBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+      <span style="color: #2d9574;">(</span>prefix <span style="color: #67b11d;">(</span>cp:gen-random <span style="color: #b1951d;">(</span>random <span style="color: #4e3163;">255</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span><span style="color: #3a81c3; font-weight: bold;">cp:with-oracle</span> <span style="color: #2d9574;">(</span>oracle unknown prefix<span style="color: #2d9574;">)</span>
+    <span style="color: #2d9574;">(</span>cp:bytes-&gt;ascii <span style="color: #67b11d;">(</span>cp:break-aes-ecb-with-prefix-oracle #'oracle<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"Rollin' in my 5.0
+With my rag-top down so my hair can blow
+The girlies on standby waving just to say hi
+Did you stop? No, I just drove by
+"
+
+</pre>
+</div>
+</div>
+<div id="outline-container-orgc8381b7" class="outline-3">
+<h3 id="orgc8381b7"><span class="section-number-3">2.7</span> PKCS#7 padding validation</h3>
+<div class="outline-text-3" id="text-2-7">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span>cp:bytes-&gt;ascii
+ <span style="color: #6c3163;">(</span>cp:unpad-pkcs7
+  <span style="color: #2d9574;">(</span>concatenate '<span style="color: #67b11d;">(</span>vector <span style="color: #b1951d;">(</span>unsigned-byte <span style="color: #4e3163;">8</span><span style="color: #b1951d;">)</span> *<span style="color: #67b11d;">)</span>
+               <span style="color: #67b11d;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"ICE ICE BABY"</span><span style="color: #67b11d;">)</span>
+               #<span style="color: #67b11d;">(</span><span style="color: #4e3163;">4</span> <span style="color: #4e3163;">4</span> <span style="color: #4e3163;">4</span> <span style="color: #4e3163;">4</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"ICE ICE BABY"
+
+</pre>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">handler-case</span>
+    <span style="color: #6c3163;">(</span>cp:unpad-pkcs7
+     <span style="color: #2d9574;">(</span>concatenate '<span style="color: #67b11d;">(</span>vector <span style="color: #b1951d;">(</span>unsigned-byte <span style="color: #4e3163;">8</span><span style="color: #b1951d;">)</span> *<span style="color: #67b11d;">)</span>
+                  <span style="color: #67b11d;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"ICE ICE BABY"</span><span style="color: #67b11d;">)</span>
+                  #<span style="color: #67b11d;">(</span><span style="color: #4e3163;">5</span> <span style="color: #4e3163;">5</span> <span style="color: #4e3163;">5</span> <span style="color: #4e3163;">5</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>cp:invalid-padding-error <span style="color: #2d9574;">()</span> <span style="color: #3a81c3;">:invalid-padding</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+:INVALID-PADDING
+
+</pre>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">handler-case</span>
+    <span style="color: #6c3163;">(</span>cp:unpad-pkcs7
+     <span style="color: #2d9574;">(</span>concatenate '<span style="color: #67b11d;">(</span>vector <span style="color: #b1951d;">(</span>unsigned-byte <span style="color: #4e3163;">8</span><span style="color: #b1951d;">)</span> *<span style="color: #67b11d;">)</span>
+                  <span style="color: #67b11d;">(</span>cp:ascii-&gt;bytes <span style="color: #2d9574;">"ICE ICE BABY"</span><span style="color: #67b11d;">)</span>
+                  #<span style="color: #67b11d;">(</span><span style="color: #4e3163;">1</span> <span style="color: #4e3163;">2</span> <span style="color: #4e3163;">3</span> <span style="color: #4e3163;">4</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>cp:invalid-padding-error <span style="color: #2d9574;">()</span> <span style="color: #3a81c3;">:invalid-padding</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+:INVALID-PADDING
+
+</pre>
+</div>
+</div>
+<div id="outline-container-org1abe578" class="outline-3">
+<h3 id="org1abe578"><span class="section-number-3">2.8</span> CBC bitflipping attacks</h3>
+<div class="outline-text-3" id="text-2-8">
+<p>
+The intuition here is that the prior ciphertext block gets XOR'd with the output
+of the AES s-box. That means, to get the required character, we need to XOR the
+right ciphertext byte with the known-plaintext byte and the desired byte. That
+is what the function <code>CBC-FLIP</code> does in the code below.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #3a81c3;">(</span><span style="color: #3a81c3; font-weight: bold;">let*</span> <span style="color: #6c3163;">(</span><span style="color: #2d9574;">(</span>secret <span style="color: #67b11d;">(</span>cp:gen-random <span style="color: #4e3163;">16</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>iv <span style="color: #67b11d;">(</span>cp:gen-random <span style="color: #4e3163;">16</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>user-data <span style="color: #2d9574;">"aaaaaaaaaaaaaaaaaaaaaaadminatrue"</span><span style="color: #2d9574;">)</span>
+       <span style="color: #2d9574;">(</span>encrypted <span style="color: #67b11d;">(</span>cp:encrypt-user-data secret iv user-data<span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span>
+  <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Flip the 'a' before "admin" to ';' and the 'a' before</span>
+  <span style="color: #2aa1ae; background-color: #ecf3ec;">;; </span><span style="color: #2aa1ae; background-color: #ecf3ec;">"true" to '='. Hard code the indices, because I'm lazy.</span>
+  <span style="color: #6c3163;">(</span>cp:cbc-flip encrypted <span style="color: #4e3163;">37</span> #\a #\;<span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>cp:cbc-flip encrypted <span style="color: #4e3163;">43</span> #\a #\=<span style="color: #6c3163;">)</span>
+  <span style="color: #6c3163;">(</span>cp:data-lookup <span style="color: #2d9574;">"admin"</span> <span style="color: #2d9574;">(</span>cp:decrypt-and-parse-data secret iv encrypted<span style="color: #2d9574;">)</span><span style="color: #6c3163;">)</span><span style="color: #3a81c3;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+"true"
+
+</pre>
+</div>
+</div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2017-08-24 Thu 23:18</p>
+<p class="date">Created: 2017-10-08 Sun 21:32</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
