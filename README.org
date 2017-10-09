@@ -1,0 +1,4 @@
+#+title: Cryptopals Challenges
+
+All solutions are in the challenges.org file found in this repo, which has been
+exported to HTML [[https://jdtw.github.io/cryptopals/challenges.html][here]].
