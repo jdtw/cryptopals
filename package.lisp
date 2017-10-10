@@ -65,4 +65,7 @@
            #:encrypt-user-data
            #:decrypt-and-parse-data
            #:data-lookup
-           #:cbc-flip))
+           #:cbc-flip
+           #:make-padding-oracle
+           #:oracle-encrypt
+           #:break-cbc-with-padding-oracle))
