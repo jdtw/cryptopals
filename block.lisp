@@ -11,15 +11,16 @@
 
 (defun unpad-pkcs7 (bytes &key (block-size 16))
   (let ((len (length bytes)))
-    (unless (= (mod len block-size) 0)
-      (error 'invalid-padding-error))
+    (assert (= (mod len block-size) 0) nil 'invalid-padding-error)
     (if (> len 0)
         (let ((pad (aref bytes (- len 1))))
-          (if (and (<= pad block-size)
-                   (every (lambda (b) (= b pad))
-                          (subseq bytes (- len pad) len)))
-              (subseq bytes 0 (- len pad))
-              (error 'invalid-padding-error)))
+          (assert (and (<= pad block-size)
+                       (> pad 0)
+                       (every (lambda (b) (= b pad))
+                              (subseq bytes (- len pad) len)))
+                  nil
+                  'invalid-padding-error)
+          (subseq bytes 0 (- len pad)))
         bytes)))
 
 (defun blocker (bytes &key (block-size 16) pad)

@@ -19,4 +19,5 @@
                (:file "aes")
                (:file "cookie")
                (:file "cbc-bitflipping")
+               (:file "padding-oracle")
                (:file "cryptopals")))
