@@ -58,7 +58,7 @@
                                    :fill-pointer 0
                                    :adjustable t)
         for pad from 1 to 16
-        do (loop for b from max-byte downto pad
+        do (loop for b from max-byte downto 0
                  for broken = (break-byte oracle iv block known pad b)
                  until broken
                  finally (progn (assert broken)
