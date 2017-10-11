@@ -8,9 +8,11 @@
                #:babel-streams
                #:cffi
                #:alexandria
-               #:str)
+               #:str
+               #:nibbles)
   :serial t
   :components ((:file "package")
+               (:file "bytes")
                (:file "strings")
                (:file "chi")
                (:file "block")

@@ -2,10 +2,6 @@
 
 (in-package #:cryptopals)
 
-(defun concat-bytes (&rest sequences)
-  (declare (optimize speed))
-  (apply #'concatenate '(vector (unsigned-byte 8) *) sequences))
-
 (defmacro with-blocks ((stream blocks bytes &key pad)
                        &body body)
   (with-gensyms (bytes-var)

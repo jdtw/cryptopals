@@ -2,13 +2,16 @@
 
 (in-package #:cryptopals)
 
-(defun map-bytes (func sequence &rest more-sequences)
-  (apply #'map '(vector (unsigned-byte 8) *) func sequence more-sequences))
-
 (defun fixed-xor (b1 b2)
   (let ((len (length b1)))
-    (unless (= len (length b2)) (error "b2 is not of length ~a" len))
+    (assert (= len (length b2)) nil "b2 is not of length ~a" len)
     (map-bytes #'logxor b1 b2)))
+
+(defun xor-bytes (b1 b2)
+  (let* ((b1-len (length b1))
+         (b2-len (length b2))
+         (len (min b1-len b2-len)))
+    (fixed-xor (subseq b1 0 len) (subseq b2 0 len))))
 
 (defun break-single-byte-xor (bytes &key (take 1))
   (mapcar
