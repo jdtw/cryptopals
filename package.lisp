@@ -19,6 +19,8 @@
   (:import-from #:str
                 #:split
                 #:join)
+  (:import-from #:nibbles
+                #:write-ub64/le)
   (:export #:bytes->ascii
            #:ascii->bytes
            #:bytes->hex
@@ -68,4 +70,6 @@
            #:cbc-flip
            #:make-padding-oracle
            #:oracle-encrypt
-           #:break-cbc-with-padding-oracle))
+           #:break-cbc-with-padding-oracle
+           #:aes-ctr
+           #:crypt-aes-ctr))
