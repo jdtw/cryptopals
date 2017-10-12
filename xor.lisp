@@ -2,6 +2,9 @@
 
 (in-package #:cryptopals)
 
+(defmacro xorf (place &rest integers)
+  `(setf ,place (logxor ,place ,@integers)))
+
 (defun fixed-xor (b1 b2)
   (let ((len (length b1)))
     (assert (= len (length b2)) nil "b2 is not of length ~a" len)

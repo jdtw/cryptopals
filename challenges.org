@@ -642,3 +642,12 @@ is what the function ~CBC-FLIP~ does in the code below.
 #+RESULTS:
 : "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby "
 ** Implement the MT19937 Mersenne Twister RNG
+#+BEGIN_SRC lisp
+  (let ((mt (cp:mt19937 1)))
+    (loop repeat 10
+          collect (cp:extract-number mt)))
+#+END_SRC
+
+#+RESULTS:
+: (1791095845 4282876139 3093770124 4005303368 491263 550290313 1298508491
+:  4290846341 630311759 1013994432)

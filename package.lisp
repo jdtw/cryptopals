@@ -72,4 +72,7 @@
            #:oracle-encrypt
            #:break-cbc-with-padding-oracle
            #:aes-ctr
-           #:crypt-aes-ctr))
+           #:crypt-aes-ctr
+           #:mt19937
+           #:seed-mt
+           #:extract-number))
