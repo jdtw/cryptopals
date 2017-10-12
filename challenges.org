@@ -641,3 +641,4 @@ is what the function ~CBC-FLIP~ does in the code below.
 
 #+RESULTS:
 : "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby "
+** Implement the MT19937 Mersenne Twister RNG

@@ -23,4 +23,5 @@
                (:file "cbc-bitflipping")
                (:file "padding-oracle")
                (:file "aes-ctr")
+               (:file "mt19937")
                (:file "cryptopals")))
